@@ -1,0 +1,236 @@
+"use client"
+
+import { useState } from "react"
+import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
+import { Badge } from "@/components/ui/badge"
+import { Button } from "@/components/ui/button"
+import { Card, CardContent } from "@/components/ui/card"
+import { Input } from "@/components/ui/input"
+import { Textarea } from "@/components/ui/textarea"
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogFooter,
+  DialogHeader,
+  DialogTitle,
+  DialogTrigger,
+} from "@/components/ui/dialog"
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuSeparator,
+  DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu"
+import { Edit, Mail, MessageSquare, MoreHorizontal, Share2, UserPlus, UserMinus } from "lucide-react"
+
+interface ProfileHeaderProps {
+  student: {
+    id: string
+    name: string
+    email: string
+    gwid: string
+    school: string
+    program: string
+    year: string
+    interests: string[]
+    status?: string
+    avatar?: string
+    isCurrentUser: boolean
+  }
+}
+
+export function ProfileHeader({ student }: ProfileHeaderProps) {
+  const [isFollowing, setIsFollowing] = useState(false)
+  const [isEditing, setIsEditing] = useState(false)
+  const [status, setStatus] = useState(student.status || "")
+  const [showImageUpload, setShowImageUpload] = useState(false)
+
+  const handleToggleFollow = () => {
+    setIsFollowing(!isFollowing)
+  }
+
+  const handleStatusUpdate = () => {
+    // In a real app, you would save the status to the database
+    setIsEditing(false)
+  }
+
+  const handleImageUpload = () => {
+    // In a real app, you would handle the image upload
+    setShowImageUpload(false)
+  }
+
+  return (
+    <Card>
+      <CardContent className="p-6">
+        <div className="flex flex-col md:flex-row gap-6">
+          {/* Avatar Section */}
+          <div className="flex flex-col items-center">
+            <div className="relative">
+              <Avatar className="h-32 w-32 border-4 border-white bg-white">
+                <AvatarImage src={student.avatar || "/placeholder.svg"} alt={student.name} />
+                <AvatarFallback className="text-2xl">
+                  {student.name
+                    .split(" ")
+                    .map((n) => n[0])
+                    .join("")}
+                </AvatarFallback>
+              </Avatar>
+              {student.isCurrentUser && (
+                <Dialog open={showImageUpload} onOpenChange={setShowImageUpload}>
+                  <DialogTrigger asChild>
+                    <Button
+                      variant="secondary"
+                      size="sm"
+                      className="absolute right-0 bottom-0 rounded-full p-1 h-8 w-8"
+                    >
+                      <Edit className="h-4 w-4" />
+                    </Button>
+                  </DialogTrigger>
+                  <DialogContent>
+                    <DialogHeader>
+                      <DialogTitle>Update Profile Picture</DialogTitle>
+                      <DialogDescription>
+                        Upload a new profile picture. The image should be square for best results.
+                      </DialogDescription>
+                    </DialogHeader>
+                    <div className="py-4">
+                      <Input type="file" accept="image/*" />
+                    </div>
+                    <DialogFooter>
+                      <Button variant="outline" onClick={() => setShowImageUpload(false)}>
+                        Cancel
+                      </Button>
+                      <Button onClick={handleImageUpload} className="bg-[#0033A0] hover:bg-[#002180]">
+                        Upload
+                      </Button>
+                    </DialogFooter>
+                  </DialogContent>
+                </Dialog>
+              )}
+            </div>
+
+            {!student.isCurrentUser && (
+              <div className="flex gap-2 mt-4">
+                <Button variant="outline" size="sm" onClick={handleToggleFollow}>
+                  {isFollowing ? <UserMinus className="mr-2 h-4 w-4" /> : <UserPlus className="mr-2 h-4 w-4" />}
+                  {isFollowing ? "Unfollow" : "Follow"}
+                </Button>
+                <Button size="sm" className="bg-[#0033A0] hover:bg-[#002180]">
+                  <MessageSquare className="mr-2 h-4 w-4" />
+                  Message
+                </Button>
+              </div>
+            )}
+          </div>
+
+          {/* Profile Info Section */}
+          <div className="flex-1">
+            <div className="flex justify-between items-start">
+              <div>
+                <h1 className="text-2xl font-bold">{student.name}</h1>
+                <div className="flex items-center gap-2 text-gray-500 mt-1">
+                  <Badge variant="outline">{student.program}</Badge>
+                  <span className="text-sm">{student.year}</span>
+                </div>
+              </div>
+
+              {!student.isCurrentUser ? (
+                <DropdownMenu>
+                  <DropdownMenuTrigger asChild>
+                    <Button variant="ghost" size="icon">
+                      <MoreHorizontal className="h-5 w-5" />
+                    </Button>
+                  </DropdownMenuTrigger>
+                  <DropdownMenuContent align="end">
+                    <DropdownMenuItem>
+                      <Share2 className="mr-2 h-4 w-4" />
+                      Share Profile
+                    </DropdownMenuItem>
+                    <DropdownMenuSeparator />
+                    <DropdownMenuItem className="text-red-600">Report User</DropdownMenuItem>
+                  </DropdownMenuContent>
+                </DropdownMenu>
+              ) : (
+                <Button variant="outline" size="sm" onClick={() => setIsEditing(true)} disabled={isEditing}>
+                  <Edit className="mr-2 h-4 w-4" />
+                  Update Status
+                </Button>
+              )}
+            </div>
+
+            {/* Status */}
+            <div className="mt-4">
+              <h3 className="text-sm font-medium text-gray-500">Status</h3>
+              {isEditing ? (
+                <div className="mt-1 space-y-2">
+                  <Textarea
+                    value={status}
+                    onChange={(e) => setStatus(e.target.value)}
+                    placeholder="What's on your mind?"
+                    className="min-h-[80px]"
+                  />
+                  <div className="flex justify-end gap-2">
+                    <Button variant="outline" size="sm" onClick={() => setIsEditing(false)}>
+                      Cancel
+                    </Button>
+                    <Button size="sm" onClick={handleStatusUpdate} className="bg-[#0033A0] hover:bg-[#002180]">
+                      Update
+                    </Button>
+                  </div>
+                </div>
+              ) : (
+                <p className="text-gray-700 mt-1">{status || "No status set"}</p>
+              )}
+            </div>
+
+            {/* Basic Info */}
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mt-4">
+              <div>
+                <h3 className="text-sm font-medium text-gray-500">Contact Information</h3>
+                <div className="mt-1 space-y-1">
+                  <div className="flex items-center text-sm">
+                    <Mail className="h-4 w-4 mr-2 text-gray-500" />
+                    <span>{student.email}</span>
+                  </div>
+                  <div className="flex items-center text-sm">
+                    <span className="font-medium mr-2">GWID:</span>
+                    <span>{student.gwid}</span>
+                  </div>
+                </div>
+              </div>
+
+              <div>
+                <h3 className="text-sm font-medium text-gray-500">Academic Information</h3>
+                <div className="mt-1 space-y-1 text-sm">
+                  <div>
+                    <span className="font-medium">School:</span> {student.school}
+                  </div>
+                  <div>
+                    <span className="font-medium">Program:</span> {student.program}
+                  </div>
+                  <div>
+                    <span className="font-medium">Year:</span> {student.year}
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            {/* Interests */}
+            <div className="mt-4">
+              <h3 className="text-sm font-medium text-gray-500">Interests</h3>
+              <div className="flex flex-wrap gap-2 mt-2">
+                {student.interests.map((interest, index) => (
+                  <Badge key={index} variant="secondary">
+                    {interest}
+                  </Badge>
+                ))}
+              </div>
+            </div>
+          </div>
+        </div>
+      </CardContent>
+    </Card>
+  )
+}
