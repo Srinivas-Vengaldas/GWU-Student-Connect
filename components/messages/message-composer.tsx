@@ -1,7 +1,6 @@
 "use client"
 
 import type React from "react"
-
 import { useState } from "react"
 import { Button } from "@/components/ui/button"
 import { Textarea } from "@/components/ui/textarea"
@@ -11,16 +10,17 @@ import { Code, FileUp, ImageIcon, Mic, PlusCircle, Send, Smile, Timer } from "lu
 
 interface MessageComposerProps {
   conversationId: string
+  onSendMessage: (message: string) => void
 }
 
-export function MessageComposer({ conversationId }: MessageComposerProps) {
+export function MessageComposer({ conversationId, onSendMessage }: MessageComposerProps) {
   const [message, setMessage] = useState("")
   const [isRecording, setIsRecording] = useState(false)
 
   const handleSendMessage = () => {
     if (message.trim()) {
-      // In a real app, you'd send the message to your backend
-      console.log("Sending message:", message, "to conversation:", conversationId)
+      // Send the message to the parent component
+      onSendMessage(message.trim())
       setMessage("")
     }
   }

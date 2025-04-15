@@ -8,6 +8,14 @@ import { Input } from "@/components/ui/input"
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
 import { cn } from "@/lib/utils"
 import { Edit, Search, Users, UserPlus } from "lucide-react"
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogFooter,
+  DialogHeader,
+  DialogTitle,
+} from "@/components/ui/dialog"
 
 interface MessageSidebarProps {
   activeConversationId: string | null
@@ -17,6 +25,7 @@ interface MessageSidebarProps {
 
 export function MessageSidebar({ activeConversationId, onSelectConversation, className }: MessageSidebarProps) {
   const [searchQuery, setSearchQuery] = useState("")
+  const [newMessageDialogOpen, setNewMessageDialogOpen] = useState(false)
 
   // Mock conversation data
   const conversations = [
@@ -86,7 +95,7 @@ export function MessageSidebar({ activeConversationId, onSelectConversation, cla
         <div className="flex items-center justify-between mb-4">
           <h2 className="text-lg font-semibold">Messages</h2>
           <div className="flex space-x-1">
-            <Button variant="ghost" size="icon" title="New message">
+            <Button variant="ghost" size="icon" title="New message" onClick={() => setNewMessageDialogOpen(true)}>
               <Edit className="h-4 w-4" />
             </Button>
             <Button variant="ghost" size="icon" title="New group">
@@ -174,6 +183,74 @@ export function MessageSidebar({ activeConversationId, onSelectConversation, cla
           </div>
         </TabsContent>
       </Tabs>
+      {/* New Message Dialog */}
+      <Dialog open={newMessageDialogOpen} onOpenChange={setNewMessageDialogOpen}>
+        <DialogContent className="sm:max-w-md">
+          <DialogHeader>
+            <DialogTitle>New Message</DialogTitle>
+            <DialogDescription>Select a user to start a new conversation.</DialogDescription>
+          </DialogHeader>
+          <div className="space-y-4 py-4">
+            <div className="relative">
+              <Search className="absolute left-2.5 top-2.5 h-4 w-4 text-gray-500" />
+              <Input type="search" placeholder="Search users..." className="pl-8" />
+            </div>
+            <div className="max-h-60 overflow-y-auto space-y-2">
+              {/* Sample users - in a real app, these would be fetched from an API */}
+              {[
+                {
+                  id: "u1",
+                  name: "Alex Johnson",
+                  avatar: "/placeholder.svg?height=40&width=40",
+                  department: "Computer Science",
+                },
+                {
+                  id: "u2",
+                  name: "Jamie Smith",
+                  avatar: "/placeholder.svg?height=40&width=40",
+                  department: "Physics",
+                },
+                {
+                  id: "u3",
+                  name: "Prof. Williams",
+                  avatar: "/placeholder.svg?height=40&width=40",
+                  department: "Faculty",
+                },
+                {
+                  id: "u4",
+                  name: "Sarah Chen",
+                  avatar: "/placeholder.svg?height=40&width=40",
+                  department: "Mathematics",
+                },
+              ].map((user) => (
+                <div
+                  key={user.id}
+                  className="flex items-center gap-3 p-2 rounded-md hover:bg-gray-100 cursor-pointer"
+                  onClick={() => {
+                    // In a real app, this would create a new conversation or open an existing one
+                    onSelectConversation(user.id)
+                    setNewMessageDialogOpen(false)
+                  }}
+                >
+                  <Avatar className="h-10 w-10">
+                    <AvatarImage src={user.avatar || "/placeholder.svg"} alt={user.name} />
+                    <AvatarFallback>{user.name.charAt(0)}</AvatarFallback>
+                  </Avatar>
+                  <div>
+                    <p className="font-medium">{user.name}</p>
+                    <p className="text-sm text-gray-500">{user.department}</p>
+                  </div>
+                </div>
+              ))}
+            </div>
+          </div>
+          <DialogFooter>
+            <Button variant="outline" onClick={() => setNewMessageDialogOpen(false)}>
+              Cancel
+            </Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
     </div>
   )
 }
@@ -196,7 +273,7 @@ function ConversationItem({ conversation, isActive, onClick }: ConversationItemP
     >
       <div className="relative">
         <Avatar className="h-10 w-10">
-          <AvatarImage src={conversation.avatar} alt={conversation.name} />
+          <AvatarImage src={conversation.avatar || "/placeholder.svg"} alt={conversation.name} />
           <AvatarFallback>{conversation.name.charAt(0)}</AvatarFallback>
         </Avatar>
         {conversation.type === "direct" && conversation.online && (

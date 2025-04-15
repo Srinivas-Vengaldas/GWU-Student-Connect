@@ -1,7 +1,8 @@
 "use client"
 
-import { useState } from "react"
-import Link from "next/link"
+import type React from "react"
+
+import { useState, useEffect } from "react"
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
 import { Badge } from "@/components/ui/badge"
 import { Button } from "@/components/ui/button"
@@ -29,6 +30,7 @@ import {
   Star,
   Trash,
 } from "lucide-react"
+import { useRouter } from "next/navigation"
 
 interface MaterialCardProps {
   material: any
@@ -36,7 +38,15 @@ interface MaterialCardProps {
 }
 
 export function MaterialCard({ material, isOwner = false }: MaterialCardProps) {
+  const router = useRouter()
   const [isFavorite, setIsFavorite] = useState(material.isFavorite)
+  const [isDownloaded, setIsDownloaded] = useState(false)
+
+  // Check if material is in downloads
+  useEffect(() => {
+    const downloads = JSON.parse(localStorage.getItem("downloadedMaterials") || "[]")
+    setIsDownloaded(downloads.includes(material.id))
+  }, [material.id])
 
   const getFileIcon = (fileType: string) => {
     switch (fileType) {
@@ -56,31 +66,79 @@ export function MaterialCard({ material, isOwner = false }: MaterialCardProps) {
 
   const handleToggleFavorite = () => {
     setIsFavorite(!isFavorite)
+
+    // Update favorites in localStorage
+    const favorites = JSON.parse(localStorage.getItem("favoriteMaterials") || "[]")
+    if (isFavorite) {
+      const index = favorites.indexOf(material.id)
+      if (index > -1) {
+        favorites.splice(index, 1)
+      }
+    } else {
+      if (!favorites.includes(material.id)) {
+        favorites.push(material.id)
+      }
+    }
+    localStorage.setItem("favoriteMaterials", JSON.stringify(favorites))
+  }
+
+  const handleDownload = (e: React.MouseEvent) => {
+    e.preventDefault()
+    e.stopPropagation()
+
+    // In a real app, you'd initiate a file download here
+    console.log("Downloading material:", material.id)
+
+    // Track the download in localStorage
+    const downloads = JSON.parse(localStorage.getItem("downloadedMaterials") || "[]")
+    if (!downloads.includes(material.id)) {
+      downloads.push(material.id)
+      localStorage.setItem("downloadedMaterials", JSON.stringify(downloads))
+    }
+
+    setIsDownloaded(true)
+
+    // Simulate download with a timeout
+    setTimeout(() => {
+      alert(`Downloaded: ${material.title}`)
+    }, 1000)
+  }
+
+  const handleCardClick = () => {
+    router.push(`/student/study-materials/${material.id}`)
   }
 
   return (
-    <Card className="h-full flex flex-col hover:shadow-md transition-shadow">
+    <Card className="h-full flex flex-col hover:shadow-md transition-shadow cursor-pointer" onClick={handleCardClick}>
       <CardContent className="flex-1 p-4">
         <div className="flex items-center justify-between mb-3">
           <div className="flex items-center justify-center h-12 w-12 rounded-md bg-gray-100">
             {getFileIcon(material.fileType)}
           </div>
           <div className="flex items-center gap-1">
-            <Button variant="ghost" size="icon" className="h-8 w-8" onClick={handleToggleFavorite}>
+            <Button
+              variant="ghost"
+              size="icon"
+              className="h-8 w-8"
+              onClick={(e) => {
+                e.stopPropagation()
+                handleToggleFavorite()
+              }}
+            >
               <Heart className={`h-4 w-4 ${isFavorite ? "fill-red-500 text-red-500" : ""}`} />
             </Button>
             <DropdownMenu>
               <DropdownMenuTrigger asChild>
-                <Button variant="ghost" size="icon" className="h-8 w-8">
+                <Button variant="ghost" size="icon" className="h-8 w-8" onClick={(e) => e.stopPropagation()}>
                   <MoreHorizontal className="h-4 w-4" />
                 </Button>
               </DropdownMenuTrigger>
-              <DropdownMenuContent align="end">
+              <DropdownMenuContent align="end" onClick={(e) => e.stopPropagation()}>
                 <DropdownMenuItem>
                   <Eye className="mr-2 h-4 w-4" />
                   Preview
                 </DropdownMenuItem>
-                <DropdownMenuItem>
+                <DropdownMenuItem onClick={handleDownload}>
                   <Download className="mr-2 h-4 w-4" />
                   Download
                 </DropdownMenuItem>
@@ -113,9 +171,7 @@ export function MaterialCard({ material, isOwner = false }: MaterialCardProps) {
             </DropdownMenu>
           </div>
         </div>
-        <Link href={`/student/study-materials/${material.id}`}>
-          <h3 className="font-semibold text-[#0033A0] hover:underline line-clamp-2">{material.title}</h3>
-        </Link>
+        <h3 className="font-semibold text-[#0033A0] hover:underline line-clamp-2">{material.title}</h3>
         <p className="text-sm text-gray-700 mt-1 line-clamp-2">{material.description}</p>
         <div className="mt-2 flex flex-wrap gap-1">
           <Badge>{material.course}</Badge>
@@ -147,9 +203,13 @@ export function MaterialCard({ material, isOwner = false }: MaterialCardProps) {
           <TooltipProvider>
             <Tooltip>
               <TooltipTrigger asChild>
-                <Button size="sm" className="h-8 gap-1 bg-[#0033A0] hover:bg-[#002180]">
+                <Button
+                  size="sm"
+                  className={`h-8 gap-1 ${isDownloaded ? "bg-green-600 hover:bg-green-700" : "bg-[#0033A0] hover:bg-[#002180]"}`}
+                  onClick={(e) => handleDownload(e)}
+                >
                   <Download className="h-3 w-3" />
-                  Download
+                  {isDownloaded ? "Downloaded" : "Download"}
                 </Button>
               </TooltipTrigger>
               <TooltipContent>

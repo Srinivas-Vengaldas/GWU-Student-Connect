@@ -1,24 +1,25 @@
 "use client"
 
-import { useState } from "react"
+import { useState, useCallback } from "react"
+import { MessageSidebar } from "@/components/messages/message-sidebar"
+import { MessagePanel } from "@/components/messages/message-panel"
+import { MessageComposer } from "@/components/messages/message-composer"
+import { MessageHeader } from "@/components/messages/message-header"
+import { EmptyState } from "@/components/messages/empty-state"
 import { AppHeader } from "@/components/app-header"
 import { Footer } from "@/components/footer"
 import { DashboardNav } from "@/components/dashboard-nav"
-import { MessageSidebar } from "@/components/messages/message-sidebar"
-import { MessagePanel } from "@/components/messages/message-panel"
-import { EmptyState } from "@/components/messages/empty-state"
-import { MessageComposer } from "@/components/messages/message-composer"
-import { MessageHeader } from "@/components/messages/message-header"
 import { useMediaQuery } from "@/hooks/use-media-query"
 
 export default function MessagesPage() {
-  const [activeConversation, setActiveConversation] = useState<string | null>(null)
+  const [selectedConversation, setSelectedConversation] = useState<string | null>(null)
   const [showSidebar, setShowSidebar] = useState(true)
   const isMobile = useMediaQuery("(max-width: 768px)")
+  const [addMessageToConversation, setAddMessageToConversation] = useState<((content: string) => void) | null>(null)
 
   // On mobile, when a conversation is selected, hide the sidebar
   const handleConversationSelect = (id: string) => {
-    setActiveConversation(id)
+    setSelectedConversation(id)
     if (isMobile) {
       setShowSidebar(false)
     }
@@ -28,9 +29,21 @@ export default function MessagesPage() {
   const handleBackToList = () => {
     setShowSidebar(true)
     if (isMobile) {
-      setActiveConversation(null)
+      setSelectedConversation(null)
     }
   }
+
+  // Function to handle sending a new message
+  const handleSendMessage = (message: string) => {
+    if (selectedConversation && addMessageToConversation) {
+      addMessageToConversation(message)
+    }
+  }
+
+  // Callback to receive the addMessage function from MessagePanel
+  const handleMessagesInit = useCallback((addMessage: (content: string) => void) => {
+    setAddMessageToConversation(() => addMessage)
+  }, [])
 
   return (
     <div className="flex min-h-screen flex-col">
@@ -45,7 +58,7 @@ export default function MessagesPage() {
               {/* Conversation List Sidebar */}
               {(showSidebar || !isMobile) && (
                 <MessageSidebar
-                  activeConversationId={activeConversation}
+                  activeConversationId={selectedConversation}
                   onSelectConversation={handleConversationSelect}
                   className={isMobile ? "w-full" : "w-80 border-r"}
                 />
@@ -54,15 +67,15 @@ export default function MessagesPage() {
               {/* Message Panel */}
               {(!showSidebar || !isMobile) && (
                 <div className="flex flex-1 flex-col">
-                  {activeConversation ? (
+                  {selectedConversation ? (
                     <>
                       <MessageHeader
-                        conversationId={activeConversation}
+                        conversationId={selectedConversation}
                         onBack={handleBackToList}
                         showBackButton={isMobile}
                       />
-                      <MessagePanel conversationId={activeConversation} />
-                      <MessageComposer conversationId={activeConversation} />
+                      <MessagePanel conversationId={selectedConversation} onMessagesInit={handleMessagesInit} />
+                      <MessageComposer conversationId={selectedConversation} onSendMessage={handleSendMessage} />
                     </>
                   ) : (
                     <EmptyState />

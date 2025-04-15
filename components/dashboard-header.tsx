@@ -15,7 +15,8 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu"
 import { Bell, LogOut, Settings, User } from "lucide-react"
-import { Badge } from "@/components/ui/badge"
+import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover"
+import { cn } from "@/lib/utils"
 
 interface DashboardHeaderProps {
   role: "student" | "faculty" | "alumni"
@@ -26,6 +27,23 @@ export function DashboardHeader({ role }: DashboardHeaderProps) {
     name: "Alex Johnson",
     avatar: "/placeholder.svg?height=40&width=40",
   })
+  const [notifications, setNotifications] = useState([
+    {
+      name: "Chad",
+      message: "Assigned you a task",
+      time: "9:00 AM",
+      avatar: "https://avatars.githubusercontent.com/u/4470490?v=4",
+      read: false,
+    },
+    {
+      name: "Molly",
+      message: "Sent you a message",
+      time: "10:00 AM",
+      avatar: "https://avatars.githubusercontent.com/u/4470490?v=4",
+      read: true,
+    },
+  ])
+  const unreadNotifications = notifications.filter((n) => !n.read).length
 
   // Listen for profile updates
   useEffect(() => {
@@ -71,12 +89,52 @@ export function DashboardHeader({ role }: DashboardHeaderProps) {
 
   return (
     <div className="flex items-center gap-4">
-      <Button variant="ghost" size="icon" className="relative">
-        <Bell className="h-5 w-5" />
-        <Badge className="absolute -top-1 -right-1 h-5 w-5 flex items-center justify-center p-0 text-xs bg-red-500">
-          3
-        </Badge>
-      </Button>
+      {/* Notifications */}
+      <Popover>
+        <PopoverTrigger asChild>
+          <Button variant="ghost" size="icon" className="relative">
+            <Bell className="h-5 w-5" />
+            {unreadNotifications > 0 && <span className="absolute top-0 right-0 h-2 w-2 rounded-full bg-red-500" />}
+          </Button>
+        </PopoverTrigger>
+        <PopoverContent className="w-80 p-0" align="end">
+          <div className="flex items-center justify-between p-4 border-b">
+            <h4 className="font-semibold">Notifications</h4>
+            <Button variant="ghost" size="sm" className="text-xs">
+              Mark all as read
+            </Button>
+          </div>
+          <div className="max-h-80 overflow-y-auto">
+            {notifications.map((notification, i) => (
+              <div
+                key={i}
+                className={cn(
+                  "flex items-start gap-3 p-4 border-b last:border-0",
+                  notification.read ? "bg-white" : "bg-blue-50",
+                )}
+              >
+                <Avatar className="h-9 w-9">
+                  <AvatarImage src={notification.avatar || "/placeholder.svg"} alt="" />
+                  <AvatarFallback>{notification.name[0]}</AvatarFallback>
+                </Avatar>
+                <div className="flex-1 space-y-1">
+                  <p className="text-sm">{notification.message}</p>
+                  <p className="text-xs text-gray-500">{notification.time}</p>
+                </div>
+                {!notification.read && <div className="h-2 w-2 rounded-full bg-blue-600" />}
+              </div>
+            ))}
+            {notifications.length === 0 && (
+              <div className="p-4 text-center text-sm text-gray-500">No notifications</div>
+            )}
+          </div>
+          <div className="p-2 border-t">
+            <Button variant="ghost" size="sm" className="w-full text-xs" asChild>
+              <Link href="/notifications">View all notifications</Link>
+            </Button>
+          </div>
+        </PopoverContent>
+      </Popover>
 
       <DropdownMenu>
         <DropdownMenuTrigger asChild>
