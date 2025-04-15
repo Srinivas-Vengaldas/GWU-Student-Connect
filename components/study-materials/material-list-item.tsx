@@ -210,8 +210,8 @@ export function MaterialListItem({ material, isOwner = false }: MaterialListItem
                   </DropdownMenu>
                 </div>
               </div>
-              <div className="mt-2 flex items-center justify-between text-sm">
-                <div className="flex items-center gap-4">
+              <div className="mt-2 flex items-center justify-between text-sm flex-wrap">
+                <div className="flex items-center gap-4 flex-wrap">
                   <div className="flex items-center">
                     <Avatar className="h-5 w-5 mr-1">
                       <AvatarImage src={material.uploader.avatar || "/placeholder.svg"} alt={material.uploader.name} />
@@ -227,7 +227,7 @@ export function MaterialListItem({ material, isOwner = false }: MaterialListItem
                     </span>
                   )}
                 </div>
-                <div className="flex items-center gap-3">
+                <div className="flex items-center gap-3 mt-2 sm:mt-0">
                   <div className="flex items-center gap-1">
                     <Star className="h-4 w-4 text-yellow-500 fill-yellow-500" />
                     <span className="text-xs text-gray-500">

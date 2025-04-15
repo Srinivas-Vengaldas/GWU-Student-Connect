@@ -1,41 +1,63 @@
-// This is a mock implementation for demo purposes
+// This is a mock implementation for image upload
 // In a real application, this would upload to a server or cloud storage
 
-export const handleImageUpload = async (file: File): Promise<string> => {
+export async function handleImageUpload(file: File): Promise<string> {
   return new Promise((resolve) => {
     const reader = new FileReader()
-    reader.onload = (e) => {
-      if (e.target?.result) {
-        const imageUrl = e.target.result.toString()
+
+    reader.onload = (event) => {
+      const imageUrl = event.target?.result as string
+
+      // Simulate network delay
+      setTimeout(() => {
         resolve(imageUrl)
-      }
+      }, 500)
     }
+
     reader.readAsDataURL(file)
   })
 }
 
-export function saveProfileImage(imageUrl: string): void {
-  try {
-    const profileData = localStorage.getItem("gwConnectUserProfile")
-    if (profileData) {
-      const userData = JSON.parse(profileData)
-      userData.avatar = imageUrl
-      localStorage.setItem("gwConnectUserProfile", JSON.stringify(userData))
+export async function saveProfileImage(file: File): Promise<string> {
+  return new Promise((resolve) => {
+    const reader = new FileReader()
 
-      // Force an update event that components can listen to
-      window.dispatchEvent(new Event("storage"))
-    } else {
-      localStorage.setItem(
-        "gwConnectUserProfile",
-        JSON.stringify({
-          avatar: imageUrl,
-        }),
-      )
+    reader.onload = (event) => {
+      const imageUrl = event.target?.result as string
 
-      // Force an update event that components can listen to
-      window.dispatchEvent(new Event("storage"))
+      // In a real app, you'd upload the file to a server here
+      // For now, we'll just return the data URL
+
+      // Save to localStorage for persistence across the app
+      const savedProfile = localStorage.getItem("gwConnectUserProfile")
+      if (savedProfile) {
+        try {
+          const userData = JSON.parse(savedProfile)
+          userData.avatar = imageUrl
+          localStorage.setItem("gwConnectUserProfile", JSON.stringify(userData))
+
+          // Dispatch custom event to notify other components
+          const event = new Event("profileUpdated")
+          window.dispatchEvent(event)
+
+          // Also dispatch storage event for cross-tab communication
+          const storageEvent = new StorageEvent("storage", {
+            key: "gwConnectUserProfile",
+            newValue: JSON.stringify(userData),
+            url: window.location.href,
+          })
+          window.dispatchEvent(storageEvent)
+        } catch (error) {
+          console.error("Error updating profile image:", error)
+        }
+      }
+
+      // Simulate network delay
+      setTimeout(() => {
+        resolve(imageUrl)
+      }, 500)
     }
-  } catch (error) {
-    console.error("Error saving profile image:", error)
-  }
+
+    reader.readAsDataURL(file)
+  })
 }

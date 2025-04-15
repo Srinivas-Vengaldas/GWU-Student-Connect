@@ -1,139 +1,164 @@
 "use client"
 
-import { Card, CardContent, CardFooter } from "@/components/ui/card"
+import { useState } from "react"
+import Link from "next/link"
+import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
 import { Badge } from "@/components/ui/badge"
 import { Button } from "@/components/ui/button"
+import { Card, CardContent, CardFooter } from "@/components/ui/card"
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuSeparator,
+  DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu"
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip"
-import { Download, Heart, Share2, Star, Eye, MessageSquare, CheckCircle } from "lucide-react"
-import Image from "next/image"
-import Link from "next/link"
-import { UserAvatar } from "@/components/user-avatar"
-import { useState } from "react"
+import {
+  BookOpen,
+  Download,
+  Edit,
+  Eye,
+  FileText,
+  Flag,
+  Heart,
+  ImageIcon,
+  MoreHorizontal,
+  Presentation,
+  Share2,
+  Star,
+  Trash,
+} from "lucide-react"
 
 interface MaterialCardProps {
-  material: {
-    id: string
-    title: string
-    description: string
-    type: string
-    course: string
-    downloads: number
-    date: string
-    thumbnail: string
-    author: {
-      id: string
-      name: string
-      avatar?: string
-    }
-    rating?: number
-    ratingCount?: number
-    views?: number
-    comments?: number
-    isVerified?: boolean
-    hasSolutions?: boolean
-    studyGroups?: string[]
-  }
+  material: any
   isOwner?: boolean
 }
 
 export function MaterialCard({ material, isOwner = false }: MaterialCardProps) {
-  const [isFavorite, setIsFavorite] = useState(false)
+  const [isFavorite, setIsFavorite] = useState(material.isFavorite)
+
+  const getFileIcon = (fileType: string) => {
+    switch (fileType) {
+      case "pdf":
+        return <FileText className="h-10 w-10 text-red-500" />
+      case "docx":
+        return <FileText className="h-10 w-10 text-blue-500" />
+      case "pptx":
+        return <Presentation className="h-10 w-10 text-orange-500" />
+      case "jpg":
+      case "png":
+        return <ImageIcon className="h-10 w-10 text-green-500" />
+      default:
+        return <BookOpen className="h-10 w-10 text-gray-500" />
+    }
+  }
+
+  const handleToggleFavorite = () => {
+    setIsFavorite(!isFavorite)
+  }
 
   return (
-    <Card className="overflow-hidden hover:shadow-md transition-shadow">
-      <CardContent className="p-6">
-        <div className="flex items-center gap-2 mb-3">
-          <UserAvatar user={material.author} showName={true} />
-          <span className="text-xs text-gray-500">
-            {new Date(material.date).toLocaleDateString(undefined, { month: "short", day: "numeric", year: "numeric" })}
-          </span>
-          {material.isVerified && (
-            <TooltipProvider>
-              <Tooltip>
-                <TooltipTrigger asChild>
-                  <CheckCircle className="h-4 w-4 text-green-500 ml-auto" />
-                </TooltipTrigger>
-                <TooltipContent>
-                  <p>Verified by faculty</p>
-                </TooltipContent>
-              </Tooltip>
-            </TooltipProvider>
-          )}
-        </div>
-        <div className="flex gap-4">
-          <div className="relative h-24 w-20 flex-shrink-0 bg-gray-100 rounded">
-            <Image
-              src={material.thumbnail || "/placeholder.svg"}
-              alt={material.title}
-              fill
-              className="object-cover rounded"
-            />
+    <Card className="h-full flex flex-col hover:shadow-md transition-shadow">
+      <CardContent className="flex-1 p-4">
+        <div className="flex items-center justify-between mb-3">
+          <div className="flex items-center justify-center h-12 w-12 rounded-md bg-gray-100">
+            {getFileIcon(material.fileType)}
           </div>
-          <div>
-            <Link href={`/student/study-materials/${material.id}`}>
-              <h3 className="text-lg font-semibold hover:text-[#0033A0] transition-colors">{material.title}</h3>
-            </Link>
-            <p className="text-gray-600 text-sm mt-1 line-clamp-2">{material.description}</p>
-            <div className="flex items-center gap-2 mt-2 flex-wrap">
-              <Badge variant="outline">{material.type}</Badge>
-              <Badge variant="secondary">{material.course}</Badge>
-              {material.hasSolutions && (
-                <Badge variant="outline" className="bg-green-50 text-green-700 border-green-200">
-                  Solutions
-                </Badge>
-              )}
-              {material.studyGroups && material.studyGroups.length > 0 && (
-                <Badge variant="outline" className="bg-blue-50 text-blue-700 border-blue-200">
-                  Shared in Groups
-                </Badge>
-              )}
-            </div>
+          <div className="flex items-center gap-1">
+            <Button variant="ghost" size="icon" className="h-8 w-8" onClick={handleToggleFavorite}>
+              <Heart className={`h-4 w-4 ${isFavorite ? "fill-red-500 text-red-500" : ""}`} />
+            </Button>
+            <DropdownMenu>
+              <DropdownMenuTrigger asChild>
+                <Button variant="ghost" size="icon" className="h-8 w-8">
+                  <MoreHorizontal className="h-4 w-4" />
+                </Button>
+              </DropdownMenuTrigger>
+              <DropdownMenuContent align="end">
+                <DropdownMenuItem>
+                  <Eye className="mr-2 h-4 w-4" />
+                  Preview
+                </DropdownMenuItem>
+                <DropdownMenuItem>
+                  <Download className="mr-2 h-4 w-4" />
+                  Download
+                </DropdownMenuItem>
+                <DropdownMenuItem>
+                  <Share2 className="mr-2 h-4 w-4" />
+                  Share
+                </DropdownMenuItem>
+                {isOwner ? (
+                  <>
+                    <DropdownMenuSeparator />
+                    <DropdownMenuItem>
+                      <Edit className="mr-2 h-4 w-4" />
+                      Edit
+                    </DropdownMenuItem>
+                    <DropdownMenuItem className="text-red-600">
+                      <Trash className="mr-2 h-4 w-4" />
+                      Delete
+                    </DropdownMenuItem>
+                  </>
+                ) : (
+                  <>
+                    <DropdownMenuSeparator />
+                    <DropdownMenuItem className="text-red-600">
+                      <Flag className="mr-2 h-4 w-4" />
+                      Report
+                    </DropdownMenuItem>
+                  </>
+                )}
+              </DropdownMenuContent>
+            </DropdownMenu>
+          </div>
+        </div>
+        <Link href={`/student/study-materials/${material.id}`}>
+          <h3 className="font-semibold text-[#0033A0] hover:underline line-clamp-2">{material.title}</h3>
+        </Link>
+        <p className="text-sm text-gray-700 mt-1 line-clamp-2">{material.description}</p>
+        <div className="mt-2 flex flex-wrap gap-1">
+          <Badge>{material.course}</Badge>
+          {material.tags.slice(0, 2).map((tag: string) => (
+            <Badge key={tag} variant="secondary" className="text-xs">
+              {tag}
+            </Badge>
+          ))}
+        </div>
+        <div className="mt-3 flex items-center justify-between text-xs text-gray-500">
+          <div className="flex items-center">
+            <Avatar className="h-5 w-5 mr-1">
+              <AvatarImage src={material.uploader.avatar || "/placeholder.svg"} alt={material.uploader.name} />
+              <AvatarFallback>{material.uploader.name.charAt(0)}</AvatarFallback>
+            </Avatar>
+            <span>{material.uploader.name}</span>
+          </div>
+          <div className="flex items-center gap-1">
+            <Star className="h-4 w-4 text-yellow-500 fill-yellow-500" />
+            <span>
+              {material.rating} ({material.ratingCount})
+            </span>
           </div>
         </div>
       </CardContent>
-      <CardFooter className="px-6 py-3 bg-gray-50 flex justify-between">
-        <div className="flex items-center gap-3 text-sm text-gray-500">
-          <div className="flex items-center">
-            <Download className="h-3.5 w-3.5 mr-1" />
-            <span>{material.downloads}</span>
-          </div>
-          {material.views && (
-            <div className="flex items-center">
-              <Eye className="h-3.5 w-3.5 mr-1" />
-              <span>{material.views}</span>
-            </div>
-          )}
-          {material.rating && (
-            <div className="flex items-center">
-              <Star className="h-3.5 w-3.5 mr-1 text-yellow-500 fill-yellow-500" />
-              <span>{material.rating}</span>
-            </div>
-          )}
-          {material.comments && (
-            <div className="flex items-center">
-              <MessageSquare className="h-3.5 w-3.5 mr-1" />
-              <span>{material.comments}</span>
-            </div>
-          )}
-        </div>
-        <div className="flex gap-2">
-          <Button
-            variant="ghost"
-            size="sm"
-            className={isFavorite ? "text-red-500" : ""}
-            onClick={() => setIsFavorite(!isFavorite)}
-          >
-            <Heart className={`h-4 w-4 mr-1 ${isFavorite ? "fill-red-500" : ""}`} />
-            {isFavorite ? "Saved" : "Save"}
-          </Button>
-          <Button variant="ghost" size="sm">
-            <Share2 className="h-4 w-4 mr-1" />
-            Share
-          </Button>
-          <Button size="sm" className="bg-[#0033A0] hover:bg-[#002180]">
-            <Download className="h-4 w-4 mr-1" />
-            Download
-          </Button>
+      <CardFooter className="pt-0 pb-4 px-4">
+        <div className="w-full flex items-center justify-between">
+          <span className="text-xs text-gray-500">{material.uploadDate}</span>
+          <TooltipProvider>
+            <Tooltip>
+              <TooltipTrigger asChild>
+                <Button size="sm" className="h-8 gap-1 bg-[#0033A0] hover:bg-[#002180]">
+                  <Download className="h-3 w-3" />
+                  Download
+                </Button>
+              </TooltipTrigger>
+              <TooltipContent>
+                <p>
+                  {material.downloads} downloads • {material.fileSize}
+                </p>
+              </TooltipContent>
+            </Tooltip>
+          </TooltipProvider>
         </div>
       </CardFooter>
     </Card>

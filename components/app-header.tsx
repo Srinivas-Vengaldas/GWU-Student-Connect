@@ -5,21 +5,20 @@ import { Button } from "@/components/ui/button"
 import { Menu } from "lucide-react"
 import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet"
 
-// Add the showNavInHeader prop to the component interface
 interface AppHeaderProps {
   role: "student" | "faculty" | "alumni"
   showNavInHeader?: boolean
 }
 
-// Update the component to accept and use the new prop
 export function AppHeader({ role, showNavInHeader = false }: AppHeaderProps) {
-  // Rest of the component code...
+  // Determine the home link based on role
+  const homeLink = role ? `/${role}/dashboard` : "/"
 
   return (
     <header className="sticky top-0 z-50 w-full border-b bg-background">
       <div className="container flex h-16 items-center justify-between">
         <div className="flex items-center gap-2">
-          <Link href="/" className="flex items-center gap-2">
+          <Link href={homeLink} className="flex items-center gap-2">
             <Image src="/images/gw-logo.png" alt="GW Logo" width={40} height={40} />
             <span className="text-xl font-bold text-[#0033A0]">Connect</span>
           </Link>
