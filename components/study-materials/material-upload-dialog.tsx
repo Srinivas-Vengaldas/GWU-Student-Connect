@@ -19,7 +19,9 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group"
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
 import { Badge } from "@/components/ui/badge"
-import { X } from "lucide-react"
+import { Checkbox } from "@/components/ui/checkbox"
+import { Separator } from "@/components/ui/separator"
+import { X, Upload, Calendar, LinkIcon, AlertTriangle } from "lucide-react"
 
 interface MaterialUploadDialogProps {
   open: boolean
@@ -37,6 +39,25 @@ export function MaterialUploadDialog({ open, onOpenChange }: MaterialUploadDialo
   const [currentTag, setCurrentTag] = useState("")
   const [activeTab, setActiveTab] = useState("upload")
   const [selectedFile, setSelectedFile] = useState<File | null>(null)
+  const [isReplacement, setIsReplacement] = useState(false)
+  const [expirationEnabled, setExpirationEnabled] = useState(false)
+  const [expirationDate, setExpirationDate] = useState("")
+  const [hasSolutions, setHasSolutions] = useState(false)
+  const [isVersionUpdate, setIsVersionUpdate] = useState(false)
+  const [versionNotes, setVersionNotes] = useState("")
+  const [selectedStudyGroups, setSelectedStudyGroups] = useState<string[]>([])
+  const [allowComments, setAllowComments] = useState(true)
+  const [allowDownloads, setAllowDownloads] = useState(true)
+  const [isPrivate, setIsPrivate] = useState(false)
+  const [password, setPassword] = useState("")
+
+  // Mock study groups data
+  const studyGroups = [
+    { id: "sg1", name: "Calculus Study Group" },
+    { id: "sg2", name: "Psychology Research Team" },
+    { id: "sg3", name: "Computer Science Club" },
+    { id: "sg4", name: "Chemistry Lab Partners" },
+  ]
 
   const handleAddTag = () => {
     if (currentTag.trim() && !tags.includes(currentTag.trim())) {
@@ -62,6 +83,12 @@ export function MaterialUploadDialog({ open, onOpenChange }: MaterialUploadDialo
     }
   }
 
+  const toggleStudyGroup = (groupId: string) => {
+    setSelectedStudyGroups((prev) =>
+      prev.includes(groupId) ? prev.filter((id) => id !== groupId) : [...prev, groupId],
+    )
+  }
+
   const handleSubmit = () => {
     // In a real app, you'd call an API to upload the material
     console.log("Uploading material:", {
@@ -73,6 +100,17 @@ export function MaterialUploadDialog({ open, onOpenChange }: MaterialUploadDialo
       license,
       tags,
       file: selectedFile,
+      isReplacement,
+      expirationEnabled,
+      expirationDate: expirationEnabled ? expirationDate : null,
+      hasSolutions,
+      isVersionUpdate,
+      versionNotes: isVersionUpdate ? versionNotes : null,
+      selectedStudyGroups,
+      allowComments,
+      allowDownloads,
+      isPrivate,
+      password: isPrivate ? password : null,
     })
 
     // Reset form
@@ -85,6 +123,17 @@ export function MaterialUploadDialog({ open, onOpenChange }: MaterialUploadDialo
     setTags([])
     setCurrentTag("")
     setSelectedFile(null)
+    setIsReplacement(false)
+    setExpirationEnabled(false)
+    setExpirationDate("")
+    setHasSolutions(false)
+    setIsVersionUpdate(false)
+    setVersionNotes("")
+    setSelectedStudyGroups([])
+    setAllowComments(true)
+    setAllowDownloads(true)
+    setIsPrivate(false)
+    setPassword("")
 
     // Close dialog
     onOpenChange(false)
@@ -101,22 +150,35 @@ export function MaterialUploadDialog({ open, onOpenChange }: MaterialUploadDialo
         </DialogHeader>
 
         <Tabs value={activeTab} onValueChange={setActiveTab} className="mt-4">
-          <TabsList className="grid w-full grid-cols-2">
+          <TabsList className="grid w-full grid-cols-3">
             <TabsTrigger value="upload">Upload File</TabsTrigger>
             <TabsTrigger value="details">Material Details</TabsTrigger>
+            <TabsTrigger value="sharing">Sharing Options</TabsTrigger>
           </TabsList>
 
           <TabsContent value="upload" className="space-y-4 py-4">
             <div className="space-y-2">
-              <Label htmlFor="file">Select File</Label>
+              <div className="flex items-center justify-between">
+                <Label htmlFor="file">Select File</Label>
+                <div className="flex items-center gap-2">
+                  <Checkbox
+                    id="is-replacement"
+                    checked={isReplacement}
+                    onCheckedChange={(checked) => setIsReplacement(checked as boolean)}
+                  />
+                  <Label htmlFor="is-replacement" className="text-sm">
+                    Replace existing file
+                  </Label>
+                </div>
+              </div>
               <Input
                 id="file"
                 type="file"
-                accept=".pdf,.doc,.docx,.ppt,.pptx,.xls,.xlsx,.jpg,.png"
+                accept=".pdf,.doc,.docx,.ppt,.pptx,.xls,.xlsx,.jpg,.png,.mp4,.mov"
                 onChange={handleFileChange}
               />
               <p className="text-xs text-gray-500">
-                Accepted file types: PDF, Word, PowerPoint, Excel, Images (max 50MB)
+                Accepted file types: PDF, Word, PowerPoint, Excel, Images, Videos (max 50MB)
               </p>
             </div>
 
@@ -126,6 +188,32 @@ export function MaterialUploadDialog({ open, onOpenChange }: MaterialUploadDialo
                 <p className="text-sm text-gray-500">
                   {selectedFile.name} ({(selectedFile.size / (1024 * 1024)).toFixed(2)} MB)
                 </p>
+              </div>
+            )}
+
+            {isReplacement && (
+              <div className="space-y-2">
+                <div className="flex items-center justify-between">
+                  <Label htmlFor="is-version-update">Mark as version update</Label>
+                  <Checkbox
+                    id="is-version-update"
+                    checked={isVersionUpdate}
+                    onCheckedChange={(checked) => setIsVersionUpdate(checked as boolean)}
+                  />
+                </div>
+
+                {isVersionUpdate && (
+                  <div className="space-y-2">
+                    <Label htmlFor="version-notes">Version Notes</Label>
+                    <Textarea
+                      id="version-notes"
+                      placeholder="Describe what changed in this version"
+                      rows={2}
+                      value={versionNotes}
+                      onChange={(e) => setVersionNotes(e.target.value)}
+                    />
+                  </div>
+                )}
               </div>
             )}
 
@@ -228,18 +316,37 @@ export function MaterialUploadDialog({ open, onOpenChange }: MaterialUploadDialo
               )}
             </div>
 
+            <div className="flex items-center gap-2">
+              <Checkbox
+                id="has-solutions"
+                checked={hasSolutions}
+                onCheckedChange={(checked) => setHasSolutions(checked as boolean)}
+              />
+              <Label htmlFor="has-solutions">This material contains solutions or answers</Label>
+            </div>
+
             <div className="space-y-2">
-              <Label>Visibility</Label>
-              <RadioGroup value={visibility} onValueChange={setVisibility}>
-                <div className="flex items-center space-x-2">
-                  <RadioGroupItem value="public" id="public" />
-                  <Label htmlFor="public">Public (visible to everyone)</Label>
+              <div className="flex items-center justify-between">
+                <Label htmlFor="expiration-enabled">Set expiration date</Label>
+                <Checkbox
+                  id="expiration-enabled"
+                  checked={expirationEnabled}
+                  onCheckedChange={(checked) => setExpirationEnabled(checked as boolean)}
+                />
+              </div>
+
+              {expirationEnabled && (
+                <div className="flex items-center gap-2">
+                  <Calendar className="h-4 w-4 text-gray-500" />
+                  <Input
+                    id="expiration-date"
+                    type="date"
+                    value={expirationDate}
+                    onChange={(e) => setExpirationDate(e.target.value)}
+                    min={new Date().toISOString().split("T")[0]}
+                  />
                 </div>
-                <div className="flex items-center space-x-2">
-                  <RadioGroupItem value="course" id="course" />
-                  <Label htmlFor="course">Course-specific (only visible to students in this course)</Label>
-                </div>
-              </RadioGroup>
+              )}
             </div>
 
             <div className="space-y-2">
@@ -260,8 +367,109 @@ export function MaterialUploadDialog({ open, onOpenChange }: MaterialUploadDialo
               </RadioGroup>
             </div>
 
+            <div className="flex justify-end">
+              <Button
+                onClick={() => setActiveTab("sharing")}
+                disabled={!title}
+                className="bg-[#0033A0] hover:bg-[#002180]"
+              >
+                Next: Sharing Options
+              </Button>
+            </div>
+          </TabsContent>
+
+          <TabsContent value="sharing" className="space-y-4 py-4">
+            <div className="space-y-2">
+              <Label>Visibility</Label>
+              <RadioGroup value={visibility} onValueChange={setVisibility}>
+                <div className="flex items-center space-x-2">
+                  <RadioGroupItem value="public" id="public" />
+                  <Label htmlFor="public">Public (visible to everyone)</Label>
+                </div>
+                <div className="flex items-center space-x-2">
+                  <RadioGroupItem value="course" id="course" />
+                  <Label htmlFor="course">Course-specific (only visible to students in this course)</Label>
+                </div>
+                <div className="flex items-center space-x-2">
+                  <RadioGroupItem value="private" id="private" />
+                  <Label htmlFor="private">Private (only visible to people with the link)</Label>
+                </div>
+              </RadioGroup>
+            </div>
+
+            {visibility === "private" && (
+              <div className="space-y-2">
+                <div className="flex items-center justify-between">
+                  <Label htmlFor="password-protected">Password protect this material</Label>
+                  <Checkbox
+                    id="password-protected"
+                    checked={isPrivate}
+                    onCheckedChange={(checked) => setIsPrivate(checked as boolean)}
+                  />
+                </div>
+
+                {isPrivate && (
+                  <div className="flex items-center gap-2">
+                    <LinkIcon className="h-4 w-4 text-gray-500" />
+                    <Input
+                      id="password"
+                      type="password"
+                      placeholder="Enter password"
+                      value={password}
+                      onChange={(e) => setPassword(e.target.value)}
+                    />
+                  </div>
+                )}
+              </div>
+            )}
+
+            <Separator />
+
+            <div className="space-y-2">
+              <Label>Share with Study Groups</Label>
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-2 mt-2">
+                {studyGroups.map((group) => (
+                  <div key={group.id} className="flex items-center space-x-2">
+                    <Checkbox
+                      id={`group-${group.id}`}
+                      checked={selectedStudyGroups.includes(group.id)}
+                      onCheckedChange={() => toggleStudyGroup(group.id)}
+                    />
+                    <Label htmlFor={`group-${group.id}`}>{group.name}</Label>
+                  </div>
+                ))}
+              </div>
+            </div>
+
+            <div className="space-y-2">
+              <Label>Access Options</Label>
+              <div className="flex items-center justify-between">
+                <Label htmlFor="allow-comments" className="text-sm font-normal">
+                  Allow comments
+                </Label>
+                <Checkbox
+                  id="allow-comments"
+                  checked={allowComments}
+                  onCheckedChange={(checked) => setAllowComments(checked as boolean)}
+                />
+              </div>
+              <div className="flex items-center justify-between">
+                <Label htmlFor="allow-downloads" className="text-sm font-normal">
+                  Allow downloads
+                </Label>
+                <Checkbox
+                  id="allow-downloads"
+                  checked={allowDownloads}
+                  onCheckedChange={(checked) => setAllowDownloads(checked as boolean)}
+                />
+              </div>
+            </div>
+
             <div className="rounded-md border-l-4 border-amber-500 bg-amber-50 p-4">
-              <h3 className="font-medium text-amber-800">Copyright Notice</h3>
+              <h3 className="font-medium text-amber-800 flex items-center">
+                <AlertTriangle className="h-4 w-4 mr-2" />
+                Copyright Notice
+              </h3>
               <p className="text-sm text-amber-700">
                 By uploading this material, you confirm that you have the right to share it and that it does not violate
                 any copyright laws. Do not upload copyrighted textbooks or materials without permission.
@@ -274,12 +482,13 @@ export function MaterialUploadDialog({ open, onOpenChange }: MaterialUploadDialo
           <Button variant="outline" onClick={() => onOpenChange(false)}>
             Cancel
           </Button>
-          {activeTab === "details" && (
+          {activeTab === "sharing" && (
             <Button
               onClick={handleSubmit}
               disabled={!title || !selectedFile}
               className="bg-[#0033A0] hover:bg-[#002180]"
             >
+              <Upload className="mr-2 h-4 w-4" />
               Upload Material
             </Button>
           )}

@@ -1,120 +1,86 @@
 import Link from "next/link"
-import { Card, CardContent } from "@/components/ui/card"
+import { Card, CardContent, CardFooter } from "@/components/ui/card"
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
-import { Badge } from "@/components/ui/badge"
 import { Button } from "@/components/ui/button"
-import { MessageSquare, Share2, BarChart2 } from "lucide-react"
 import { Progress } from "@/components/ui/progress"
-import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group"
-import { Label } from "@/components/ui/label"
-
-interface Author {
-  name: string
-  role: string
-  avatar: string
-  initials: string
-}
+import { MessageSquare, Share2 } from "lucide-react"
 
 interface PollOption {
-  id: number
+  id: string
   text: string
   votes: number
 }
 
-interface Poll {
-  id: number
-  title: string
+interface PollCardProps {
+  id: string
+  question: string
   options: PollOption[]
   totalVotes: number
-  author: Author
+  author: string
+  authorRole: string
   date: string
-  deadline: string
-  tags: string[]
-  comments: number
+  commentCount: number
 }
 
-interface PollCardProps {
-  poll: Poll
-}
-
-export function PollCard({ poll }: PollCardProps) {
+export function PollCard({ id, question, options, totalVotes, author, authorRole, date, commentCount }: PollCardProps) {
   return (
-    <Card>
-      <CardContent className="p-6">
-        <div className="space-y-4">
-          <div className="flex items-center space-x-4">
-            <Avatar className="h-10 w-10">
-              <AvatarImage src={poll.author.avatar} alt={poll.author.name} />
-              <AvatarFallback>{poll.author.initials}</AvatarFallback>
-            </Avatar>
-            <div>
-              <Link href={`/student/profile/${poll.author.name.toLowerCase().replace(/\s+/g, "-")}`}>
-                <div className="font-medium hover:underline cursor-pointer">{poll.author.name}</div>
-              </Link>
-              <div className="text-sm text-gray-500">
-                {poll.author.role} • {poll.date} • Closes: {poll.deadline}
-              </div>
-            </div>
-          </div>
-
+    <Card className="overflow-hidden hover:shadow-md transition-shadow">
+      <CardContent className="p-4">
+        <div className="flex items-center space-x-2 mb-2">
+          <Avatar className="h-8 w-8">
+            <AvatarImage src={`/placeholder.svg?height=32&width=32`} alt={author} />
+            <AvatarFallback>
+              {author
+                .split(" ")
+                .map((n) => n[0])
+                .join("")}
+            </AvatarFallback>
+          </Avatar>
           <div>
-            <Link href={`/student/blogs/${poll.id}`}>
-              <h3 className="text-xl font-bold text-[#0033A0] hover:underline">{poll.title}</h3>
+            <Link href={`/student/profile/${author.toLowerCase().replace(/\s+/g, "-")}`}>
+              <p className="text-sm font-medium hover:underline">{author}</p>
             </Link>
-
-            <div className="mt-4 space-y-4">
-              <RadioGroup defaultValue="option-1">
-                {poll.options.map((option) => (
-                  <div key={option.id} className="space-y-2">
-                    <div className="flex items-center space-x-2">
-                      <RadioGroupItem value={`option-${option.id}`} id={`option-${option.id}`} />
-                      <Label htmlFor={`option-${option.id}`} className="flex-1">
-                        {option.text}
-                      </Label>
-                      <span className="text-sm text-gray-500">
-                        {Math.round((option.votes / poll.totalVotes) * 100)}%
-                      </span>
-                    </div>
-                    <Progress value={(option.votes / poll.totalVotes) * 100} className="h-2" />
-                  </div>
-                ))}
-              </RadioGroup>
-
-              <div className="text-sm text-gray-500">
-                {poll.totalVotes} votes • Poll closes on {poll.deadline}
-              </div>
-
-              <Button className="w-full bg-[#0033A0] hover:bg-[#002180]">Vote</Button>
-            </div>
-          </div>
-
-          <div className="flex flex-wrap gap-2">
-            {poll.tags.map((tag) => (
-              <Link href={`/student/blogs/tags/${tag.toLowerCase().replace(/\s+/g, "-")}`} key={tag}>
-                <Badge variant="secondary" className="cursor-pointer hover:bg-secondary/80">
-                  {tag}
-                </Badge>
-              </Link>
-            ))}
-          </div>
-
-          <div className="flex items-center space-x-4 text-sm text-gray-500">
-            <Button variant="ghost" size="sm" className="flex items-center gap-1">
-              <BarChart2 className="h-4 w-4" />
-              <span>Results</span>
-            </Button>
-
-            <Button variant="ghost" size="sm" className="flex items-center gap-1">
-              <MessageSquare className="h-4 w-4" />
-              <span>{poll.comments}</span>
-            </Button>
-
-            <Button variant="ghost" size="sm">
-              <Share2 className="h-4 w-4" />
-            </Button>
+            <p className="text-xs text-gray-500">
+              {authorRole} • {date}
+            </p>
           </div>
         </div>
+
+        <Link href={`/student/blogs/polls/${id}`}>
+          <h3 className="text-lg font-semibold hover:text-[#0033A0] transition-colors mb-4">{question}</h3>
+        </Link>
+
+        <div className="space-y-3 mb-3">
+          {options.map((option) => (
+            <div key={option.id} className="space-y-1">
+              <div className="flex justify-between text-sm">
+                <span>{option.text}</span>
+                <span className="font-medium">{Math.round((option.votes / totalVotes) * 100)}%</span>
+              </div>
+              <Progress value={(option.votes / totalVotes) * 100} className="h-2" />
+            </div>
+          ))}
+        </div>
+
+        <p className="text-sm text-gray-500 mt-4">{totalVotes} votes • Poll ends in 3 days</p>
       </CardContent>
+
+      <CardFooter className="p-4 pt-0 flex justify-between items-center border-t">
+        <div className="flex space-x-4">
+          <Button variant="outline" size="sm" className="text-[#0033A0] border-[#0033A0]">
+            Vote
+          </Button>
+          <Button variant="ghost" size="sm" className="text-gray-500 hover:text-[#0033A0]">
+            <MessageSquare className="h-4 w-4 mr-1" />
+            <span className="text-xs">{commentCount}</span>
+          </Button>
+        </div>
+        <div className="flex space-x-2">
+          <Button variant="ghost" size="sm" className="text-gray-500 hover:text-[#0033A0]">
+            <Share2 className="h-4 w-4" />
+          </Button>
+        </div>
+      </CardFooter>
     </Card>
   )
 }

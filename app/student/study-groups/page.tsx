@@ -1,164 +1,334 @@
 "use client"
 
-import { DashboardHeader } from "@/components/dashboard-header"
-import { MainNav } from "@/components/main-nav"
-import { Button } from "@/components/ui/button"
+import { useState } from "react"
 import Link from "next/link"
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
-import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card"
-import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
+import { AppHeader } from "@/components/app-header"
+import { DashboardNav } from "@/components/dashboard-nav"
+import { Footer } from "@/components/footer"
+import { Card, CardContent } from "@/components/ui/card"
+import { Button } from "@/components/ui/button"
+import { Input } from "@/components/ui/input"
 import { Badge } from "@/components/ui/badge"
+import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
+import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from "@/components/ui/dropdown-menu"
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
+import {
+  Filter,
+  Plus,
+  Search,
+  Users,
+  Calendar,
+  BookOpen,
+  Clock,
+  ChevronDown,
+  Lock,
+  Globe,
+  UserPlus,
+} from "lucide-react"
 
 export default function StudyGroupsPage() {
+  const [searchQuery, setSearchQuery] = useState("")
+  const [subjectFilter, setSubjectFilter] = useState("all")
+  const [visibilityFilter, setVisibilityFilter] = useState("all")
+  const [sortBy, setSortBy] = useState("recent")
+
+  // Mock study groups data
+  const studyGroups = [
+    {
+      id: "1",
+      name: "Calculus II Study Group",
+      description: "A group for students taking MATH 220 to collaborate on problem sets and prepare for exams.",
+      course: "MATH 220",
+      subject: "Mathematics",
+      members: 15,
+      visibility: "public",
+      creator: "Sarah Williams",
+      creatorAvatar: "/placeholder.svg?height=40&width=40",
+      lastActive: "2 hours ago",
+      tags: ["Calculus", "Mathematics", "Problem Sets"],
+      nextMeeting: "Tomorrow, 5:00 PM",
+    },
+    {
+      id: "2",
+      name: "Computer Science Fundamentals",
+      description: "Discussing algorithms, data structures, and programming concepts for CS 101.",
+      course: "CS 101",
+      subject: "Computer Science",
+      members: 12,
+      visibility: "public",
+      creator: "Alex Johnson",
+      creatorAvatar: "/placeholder.svg?height=40&width=40",
+      lastActive: "1 day ago",
+      tags: ["Programming", "Algorithms", "Data Structures"],
+      nextMeeting: "Thursday, 6:30 PM",
+    },
+    {
+      id: "3",
+      name: "Organic Chemistry Lab Prep",
+      description: "Preparing for organic chemistry lab experiments and discussing procedures.",
+      course: "CHEM 202",
+      subject: "Chemistry",
+      members: 8,
+      visibility: "private",
+      creator: "Michael Chen",
+      creatorAvatar: "/placeholder.svg?height=40&width=40",
+      lastActive: "3 hours ago",
+      tags: ["Chemistry", "Lab", "Organic Chemistry"],
+      nextMeeting: "Friday, 3:00 PM",
+    },
+    {
+      id: "4",
+      name: "Physics Mechanics Group",
+      description: "Working through mechanics problems and discussing concepts from PHYS 101.",
+      course: "PHYS 101",
+      subject: "Physics",
+      members: 10,
+      visibility: "public",
+      creator: "Emily Rodriguez",
+      creatorAvatar: "/placeholder.svg?height=40&width=40",
+      lastActive: "Just now",
+      tags: ["Physics", "Mechanics", "Problem Solving"],
+      nextMeeting: "Wednesday, 4:00 PM",
+    },
+    {
+      id: "5",
+      name: "Economics Research Discussion",
+      description: "Discussing current economic research papers and theories for advanced economics students.",
+      course: "ECON 350",
+      subject: "Economics",
+      members: 6,
+      visibility: "invite-only",
+      creator: "Prof. James Wilson",
+      creatorAvatar: "/placeholder.svg?height=40&width=40",
+      lastActive: "5 hours ago",
+      tags: ["Economics", "Research", "Theory"],
+      nextMeeting: "Next Monday, 2:00 PM",
+    },
+    {
+      id: "6",
+      name: "Psychology Study Group",
+      description: "Reviewing concepts and preparing for exams in Intro to Psychology.",
+      course: "PSYC 101",
+      subject: "Psychology",
+      members: 20,
+      visibility: "public",
+      creator: "Lisa Thompson",
+      creatorAvatar: "/placeholder.svg?height=40&width=40",
+      lastActive: "Yesterday",
+      tags: ["Psychology", "Behavioral Science", "Exam Prep"],
+      nextMeeting: "Saturday, 11:00 AM",
+    },
+  ]
+
+  // Filter study groups based on search query and filters
+  const filteredGroups = studyGroups.filter((group) => {
+    const matchesSearch =
+      group.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
+      group.description.toLowerCase().includes(searchQuery.toLowerCase()) ||
+      group.course.toLowerCase().includes(searchQuery.toLowerCase()) ||
+      group.tags.some((tag) => tag.toLowerCase().includes(searchQuery.toLowerCase()))
+
+    const matchesSubject = subjectFilter === "all" || group.subject === subjectFilter
+    const matchesVisibility = visibilityFilter === "all" || group.visibility === visibilityFilter
+
+    return matchesSearch && matchesSubject && matchesVisibility
+  })
+
+  // Sort filtered groups
+  const sortedGroups = [...filteredGroups].sort((a, b) => {
+    if (sortBy === "recent") {
+      // This is a mock sort - in a real app, you'd use actual timestamps
+      return a.lastActive === "Just now" ? -1 : b.lastActive === "Just now" ? 1 : -1
+    } else if (sortBy === "members") {
+      return b.members - a.members
+    } else if (sortBy === "alphabetical") {
+      return a.name.localeCompare(b.name)
+    }
+    return 0
+  })
+
+  // Get unique subjects for filter
+  const subjects = Array.from(new Set(studyGroups.map((group) => group.subject)))
+
   return (
     <div className="flex min-h-screen flex-col">
-      <header className="sticky top-0 z-40 border-b bg-background">
-        <div className="container flex h-16 items-center justify-between py-4">
-          <MainNav />
-          <DashboardHeader role="student" />
-        </div>
-      </header>
-      <main className="flex-1">
-        <div className="container py-6">
-          <div className="mb-6 flex items-center justify-between">
-            <h1 className="text-3xl font-bold">Study Groups</h1>
-            <Button asChild>
-              <Link href="/student/study-groups/create">Create Study Group</Link>
-            </Button>
-          </div>
+      <AppHeader role="student" />
+      <div className="container flex-1 items-start md:grid md:grid-cols-[220px_1fr] md:gap-6 lg:grid-cols-[240px_1fr] lg:gap-10 py-8">
+        <aside className="fixed top-14 z-30 -ml-2 hidden h-[calc(100vh-3.5rem)] w-full shrink-0 md:sticky md:block">
+          <DashboardNav role="student" />
+        </aside>
+        <main className="flex w-full flex-col overflow-hidden">
+          <div className="flex-1 space-y-4 p-8 pt-6">
+            <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between space-y-2 sm:space-y-0">
+              <h2 className="text-3xl font-bold tracking-tight">Study Groups</h2>
+              <Link href="/student/study-groups/create">
+                <Button className="bg-[#0033A0] hover:bg-[#002180]">
+                  <Plus className="mr-2 h-4 w-4" />
+                  Create Group
+                </Button>
+              </Link>
+            </div>
 
-          <Tabs defaultValue="all" className="w-full">
-            <TabsList className="mb-4">
-              <TabsTrigger value="all">All Groups</TabsTrigger>
-              <TabsTrigger value="my-groups">My Groups</TabsTrigger>
-              <TabsTrigger value="recommended">Recommended</TabsTrigger>
-            </TabsList>
-            <TabsContent value="all">
-              <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
-                {/* Study Group Cards */}
-                {[1, 2, 3, 4, 5, 6].map((i) => (
-                  <Card key={i}>
-                    <CardHeader>
-                      <CardTitle>Data Structures & Algorithms</CardTitle>
-                      <CardDescription>CS 2201 - Spring 2023</CardDescription>
-                    </CardHeader>
-                    <CardContent>
-                      <div className="mb-4">
-                        <p className="text-sm text-muted-foreground">
-                          Weekly study sessions focusing on algorithm analysis, problem-solving, and exam preparation.
-                        </p>
-                      </div>
-                      <div className="mb-4 flex flex-wrap gap-2">
-                        <Badge variant="secondary">Algorithms</Badge>
-                        <Badge variant="secondary">Data Structures</Badge>
-                        <Badge variant="secondary">Problem Solving</Badge>
-                      </div>
-                      <div className="flex -space-x-2">
-                        {[1, 2, 3, 4].map((j) => (
-                          <Avatar key={j} className="h-8 w-8 border-2 border-background">
-                            <AvatarImage src={`/placeholder.svg?height=32&width=32&text=${j}`} />
-                            <AvatarFallback>U{j}</AvatarFallback>
-                          </Avatar>
+            {/* Search and Filters */}
+            <Card>
+              <CardContent className="p-6">
+                <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
+                  <div className="relative">
+                    <Search className="absolute left-2.5 top-2.5 h-4 w-4 text-gray-500" />
+                    <Input
+                      type="search"
+                      placeholder="Search groups..."
+                      className="pl-8"
+                      value={searchQuery}
+                      onChange={(e) => setSearchQuery(e.target.value)}
+                    />
+                  </div>
+                  <div>
+                    <Select value={subjectFilter} onValueChange={setSubjectFilter}>
+                      <SelectTrigger>
+                        <SelectValue placeholder="Subject" />
+                      </SelectTrigger>
+                      <SelectContent>
+                        <SelectItem value="all">All Subjects</SelectItem>
+                        {subjects.map((subject) => (
+                          <SelectItem key={subject} value={subject}>
+                            {subject}
+                          </SelectItem>
                         ))}
-                        <div className="flex h-8 w-8 items-center justify-center rounded-full border-2 border-background bg-muted text-xs">
-                          +3
+                      </SelectContent>
+                    </Select>
+                  </div>
+                  <div>
+                    <Select value={visibilityFilter} onValueChange={setVisibilityFilter}>
+                      <SelectTrigger>
+                        <SelectValue placeholder="Visibility" />
+                      </SelectTrigger>
+                      <SelectContent>
+                        <SelectItem value="all">All Groups</SelectItem>
+                        <SelectItem value="public">Public</SelectItem>
+                        <SelectItem value="private">Private</SelectItem>
+                        <SelectItem value="invite-only">Invite Only</SelectItem>
+                      </SelectContent>
+                    </Select>
+                  </div>
+                  <div>
+                    <DropdownMenu>
+                      <DropdownMenuTrigger asChild>
+                        <Button variant="outline" className="w-full justify-between">
+                          <div className="flex items-center">
+                            <Filter className="mr-2 h-4 w-4" />
+                            <span>
+                              Sort:{" "}
+                              {sortBy === "recent" ? "Most Recent" : sortBy === "members" ? "Most Members" : "A-Z"}
+                            </span>
+                          </div>
+                          <ChevronDown className="h-4 w-4 opacity-50" />
+                        </Button>
+                      </DropdownMenuTrigger>
+                      <DropdownMenuContent align="end" className="w-[200px]">
+                        <DropdownMenuItem onClick={() => setSortBy("recent")}>
+                          <Clock className="mr-2 h-4 w-4" />
+                          Most Recent
+                        </DropdownMenuItem>
+                        <DropdownMenuItem onClick={() => setSortBy("members")}>
+                          <Users className="mr-2 h-4 w-4" />
+                          Most Members
+                        </DropdownMenuItem>
+                        <DropdownMenuItem onClick={() => setSortBy("alphabetical")}>
+                          <BookOpen className="mr-2 h-4 w-4" />
+                          Alphabetical (A-Z)
+                        </DropdownMenuItem>
+                      </DropdownMenuContent>
+                    </DropdownMenu>
+                  </div>
+                </div>
+              </CardContent>
+            </Card>
+
+            {/* Study Groups List */}
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+              {sortedGroups.map((group) => (
+                <Link key={group.id} href={`/student/study-groups/${group.id}`}>
+                  <Card className="h-full hover:shadow-md transition-shadow">
+                    <CardContent className="p-6">
+                      <div className="flex flex-col h-full">
+                        <div className="flex items-start justify-between">
+                          <div className="flex-1">
+                            <h3 className="text-lg font-semibold text-[#0033A0]">{group.name}</h3>
+                            <p className="text-sm text-gray-500">{group.course}</p>
+                          </div>
+                          <div className="ml-2">
+                            {group.visibility === "public" && (
+                              <Globe className="h-4 w-4 text-green-500" title="Public Group" />
+                            )}
+                            {group.visibility === "private" && (
+                              <Lock className="h-4 w-4 text-amber-500" title="Private Group" />
+                            )}
+                            {group.visibility === "invite-only" && (
+                              <UserPlus className="h-4 w-4 text-blue-500" title="Invite Only" />
+                            )}
+                          </div>
+                        </div>
+
+                        <p className="mt-2 text-sm text-gray-700 line-clamp-2">{group.description}</p>
+
+                        <div className="mt-3 flex flex-wrap gap-1">
+                          {group.tags.map((tag) => (
+                            <Badge key={tag} variant="secondary" className="text-xs">
+                              {tag}
+                            </Badge>
+                          ))}
+                        </div>
+
+                        <div className="mt-4 flex items-center text-sm text-gray-500">
+                          <Users className="mr-1 h-4 w-4" />
+                          <span>{group.members} members</span>
+                        </div>
+
+                        {group.nextMeeting && (
+                          <div className="mt-1 flex items-center text-sm text-gray-500">
+                            <Calendar className="mr-1 h-4 w-4" />
+                            <span>Next: {group.nextMeeting}</span>
+                          </div>
+                        )}
+
+                        <div className="mt-4 pt-4 border-t flex items-center justify-between">
+                          <div className="flex items-center">
+                            <Avatar className="h-6 w-6 mr-2">
+                              <AvatarImage src={group.creatorAvatar || "/placeholder.svg"} alt={group.creator} />
+                              <AvatarFallback>{group.creator.charAt(0)}</AvatarFallback>
+                            </Avatar>
+                            <span className="text-xs text-gray-500">Created by {group.creator}</span>
+                          </div>
+                          <span className="text-xs text-gray-500">Active {group.lastActive}</span>
                         </div>
                       </div>
                     </CardContent>
-                    <CardFooter>
-                      <Button asChild className="w-full">
-                        <Link href={`/student/study-groups/${i}`}>View Group</Link>
-                      </Button>
-                    </CardFooter>
                   </Card>
-                ))}
+                </Link>
+              ))}
+            </div>
+
+            {/* Empty State */}
+            {filteredGroups.length === 0 && (
+              <div className="text-center py-12">
+                <Users className="mx-auto h-12 w-12 text-gray-400" />
+                <h3 className="mt-4 text-lg font-medium">No study groups found</h3>
+                <p className="mt-2 text-sm text-gray-500">
+                  Try adjusting your search or filters, or create a new study group.
+                </p>
+                <Link href="/student/study-groups/create">
+                  <Button className="mt-4 bg-[#0033A0] hover:bg-[#002180]">
+                    <Plus className="mr-2 h-4 w-4" />
+                    Create Group
+                  </Button>
+                </Link>
               </div>
-            </TabsContent>
-            <TabsContent value="my-groups">
-              <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
-                {/* My Study Group Cards */}
-                {[1, 2, 3].map((i) => (
-                  <Card key={i}>
-                    <CardHeader>
-                      <CardTitle>Advanced Machine Learning</CardTitle>
-                      <CardDescription>CS 4267 - Spring 2023</CardDescription>
-                    </CardHeader>
-                    <CardContent>
-                      <div className="mb-4">
-                        <p className="text-sm text-muted-foreground">
-                          Deep dive into neural networks, reinforcement learning, and practical ML applications.
-                        </p>
-                      </div>
-                      <div className="mb-4 flex flex-wrap gap-2">
-                        <Badge variant="secondary">Machine Learning</Badge>
-                        <Badge variant="secondary">AI</Badge>
-                        <Badge variant="secondary">Neural Networks</Badge>
-                      </div>
-                      <div className="flex -space-x-2">
-                        {[1, 2, 3].map((j) => (
-                          <Avatar key={j} className="h-8 w-8 border-2 border-background">
-                            <AvatarImage src={`/placeholder.svg?height=32&width=32&text=${j}`} />
-                            <AvatarFallback>U{j}</AvatarFallback>
-                          </Avatar>
-                        ))}
-                        <div className="flex h-8 w-8 items-center justify-center rounded-full border-2 border-background bg-muted text-xs">
-                          +2
-                        </div>
-                      </div>
-                    </CardContent>
-                    <CardFooter>
-                      <Button asChild className="w-full">
-                        <Link href={`/student/study-groups/${i}`}>View Group</Link>
-                      </Button>
-                    </CardFooter>
-                  </Card>
-                ))}
-              </div>
-            </TabsContent>
-            <TabsContent value="recommended">
-              <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
-                {/* Recommended Study Group Cards */}
-                {[1, 2, 3, 4].map((i) => (
-                  <Card key={i}>
-                    <CardHeader>
-                      <CardTitle>Web Development Workshop</CardTitle>
-                      <CardDescription>CS 3312 - Spring 2023</CardDescription>
-                    </CardHeader>
-                    <CardContent>
-                      <div className="mb-4">
-                        <p className="text-sm text-muted-foreground">
-                          Hands-on sessions for modern web development using React, Next.js, and related technologies.
-                        </p>
-                      </div>
-                      <div className="mb-4 flex flex-wrap gap-2">
-                        <Badge variant="secondary">Web Dev</Badge>
-                        <Badge variant="secondary">React</Badge>
-                        <Badge variant="secondary">JavaScript</Badge>
-                      </div>
-                      <div className="flex -space-x-2">
-                        {[1, 2, 3, 4, 5].map((j) => (
-                          <Avatar key={j} className="h-8 w-8 border-2 border-background">
-                            <AvatarImage src={`/placeholder.svg?height=32&width=32&text=${j}`} />
-                            <AvatarFallback>U{j}</AvatarFallback>
-                          </Avatar>
-                        ))}
-                        <div className="flex h-8 w-8 items-center justify-center rounded-full border-2 border-background bg-muted text-xs">
-                          +2
-                        </div>
-                      </div>
-                    </CardContent>
-                    <CardFooter>
-                      <Button asChild className="w-full">
-                        <Link href={`/student/study-groups/${i}`}>Join Group</Link>
-                      </Button>
-                    </CardFooter>
-                  </Card>
-                ))}
-              </div>
-            </TabsContent>
-          </Tabs>
-        </div>
-      </main>
+            )}
+          </div>
+        </main>
+      </div>
+      <Footer />
     </div>
   )
 }

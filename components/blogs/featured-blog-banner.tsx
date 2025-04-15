@@ -27,10 +27,34 @@ interface Blog {
 }
 
 interface FeaturedBlogBannerProps {
-  blog: Blog
+  blog?: Blog
 }
 
 export function FeaturedBlogBanner({ blog }: FeaturedBlogBannerProps) {
+  // If no blog is provided, use a default featured blog
+  const defaultBlog: Blog = {
+    id: 1,
+    title: "Tips for Effective Study Habits",
+    excerpt:
+      "Learn how to maximize your study time with these proven techniques that have helped me improve my grades and reduce stress during exam periods.",
+    author: {
+      name: "Jane Smith",
+      role: "Student",
+      avatar: "/placeholder.svg?height=40&width=40",
+      initials: "JS",
+      major: "Psychology",
+      year: "Junior",
+    },
+    date: "May 10, 2024",
+    readTime: "5 min read",
+    tags: ["Study Tips", "Productivity"],
+    likes: 42,
+    comments: 15,
+    coverImage: "/images/student-studying.jpeg",
+  }
+
+  const featuredBlog = blog || defaultBlog
+
   return (
     <Card className="overflow-hidden border-2 border-[#0033A0]">
       <div className="relative">
@@ -40,28 +64,28 @@ export function FeaturedBlogBanner({ blog }: FeaturedBlogBannerProps) {
             <div className="space-y-4">
               <div className="flex items-center space-x-4">
                 <Avatar className="h-10 w-10">
-                  <AvatarImage src={blog.author.avatar} alt={blog.author.name} />
-                  <AvatarFallback>{blog.author.initials}</AvatarFallback>
+                  <AvatarImage src={featuredBlog.author.avatar || "/placeholder.svg"} alt={featuredBlog.author.name} />
+                  <AvatarFallback>{featuredBlog.author.initials}</AvatarFallback>
                 </Avatar>
                 <div>
-                  <Link href={`/student/profile/${blog.author.name.toLowerCase().replace(/\s+/g, "-")}`}>
-                    <div className="font-medium hover:underline cursor-pointer">{blog.author.name}</div>
+                  <Link href={`/student/profile/${featuredBlog.author.name.toLowerCase().replace(/\s+/g, "-")}`}>
+                    <div className="font-medium hover:underline cursor-pointer">{featuredBlog.author.name}</div>
                   </Link>
                   <div className="text-sm text-gray-500">
-                    {blog.author.role} • {blog.date} • {blog.readTime}
+                    {featuredBlog.author.role} • {featuredBlog.date} • {featuredBlog.readTime}
                   </div>
                 </div>
               </div>
 
               <div>
-                <Link href={`/student/blogs/${blog.id}`}>
-                  <h3 className="text-2xl font-bold text-[#0033A0] hover:underline">{blog.title}</h3>
+                <Link href={`/student/blogs/${featuredBlog.id}`}>
+                  <h3 className="text-2xl font-bold text-[#0033A0] hover:underline">{featuredBlog.title}</h3>
                 </Link>
-                <p className="mt-2 text-gray-700 line-clamp-3">{blog.excerpt}</p>
+                <p className="mt-2 text-gray-700 line-clamp-3">{featuredBlog.excerpt}</p>
               </div>
 
               <div className="flex flex-wrap gap-2">
-                {blog.tags.map((tag) => (
+                {featuredBlog.tags.map((tag) => (
                   <Link href={`/student/blogs/tags/${tag.toLowerCase().replace(/\s+/g, "-")}`} key={tag}>
                     <Badge variant="secondary" className="cursor-pointer hover:bg-secondary/80">
                       {tag}
@@ -72,17 +96,17 @@ export function FeaturedBlogBanner({ blog }: FeaturedBlogBannerProps) {
             </div>
 
             <div className="mt-4">
-              <Link href={`/student/blogs/${blog.id}`}>
+              <Link href={`/student/blogs/${featuredBlog.id}`}>
                 <Button className="bg-[#0033A0] hover:bg-[#002180]">Read Featured Post</Button>
               </Link>
             </div>
           </div>
 
-          {blog.coverImage && (
+          {featuredBlog.coverImage && (
             <div className="h-full min-h-[200px] md:min-h-[unset]">
               <img
-                src={blog.coverImage || "/placeholder.svg"}
-                alt={blog.title}
+                src={featuredBlog.coverImage || "/placeholder.svg"}
+                alt={featuredBlog.title}
                 className="w-full h-full object-cover"
               />
             </div>
