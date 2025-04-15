@@ -16,18 +16,19 @@ interface MessageHeaderProps {
 }
 
 export function MessageHeader({ conversation }: MessageHeaderProps) {
-  const { recipient } = conversation
+  // Only destructure if conversation exists and has a recipient property
+  const recipient = conversation?.recipient
 
   return (
     <div className="flex items-center justify-between border-b p-3">
       <div className="flex items-center gap-3">
         <UserAvatar user={recipient} showName={false} />
         <div>
-          <Link href={`/student/profile/${recipient.id}`} className="font-medium hover:text-[#0033A0]">
-            {recipient.name}
+          <Link href={`/student/profile/${recipient?.id}`} className="font-medium hover:text-[#0033A0]">
+            {recipient?.name}
           </Link>
           <div className="flex items-center text-xs">
-            {recipient.isOnline ? (
+            {recipient?.isOnline ? (
               <span className="text-green-500">Online</span>
             ) : (
               <span className="text-gray-500">Offline</span>
