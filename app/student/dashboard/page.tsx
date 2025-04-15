@@ -1,3 +1,6 @@
+"use client"
+
+import { useState, useEffect } from "react"
 import { PageLayout } from "@/components/page-layout"
 import { WelcomePanel } from "@/components/dashboard/welcome-panel"
 import { QuickActions } from "@/components/dashboard/quick-actions"
@@ -8,11 +11,60 @@ import { RecentMaterials } from "@/components/dashboard/recent-materials"
 import { SuggestionsWidget } from "@/components/dashboard/suggestions-widget"
 
 export default function StudentDashboardPage() {
+  const [userProfile, setUserProfile] = useState({
+    name: "Alex Johnson",
+    avatar: "/placeholder.svg?height=40&width=40",
+    program: "Psychology",
+    year: "Class of 2025",
+  })
+
+  // Listen for profile updates
+  useEffect(() => {
+    const loadProfileData = () => {
+      const savedProfile = localStorage.getItem("gwConnectUserProfile")
+      if (savedProfile) {
+        try {
+          const userData = JSON.parse(savedProfile)
+          setUserProfile((prev) => ({
+            ...prev,
+            name: userData.name || prev.name,
+            avatar: userData.avatar || prev.avatar,
+            program: userData.program || prev.program,
+            year: userData.year || prev.year,
+          }))
+        } catch (error) {
+          console.error("Error parsing profile data:", error)
+        }
+      }
+    }
+
+    // Load profile data initially
+    loadProfileData()
+
+    // Listen for storage events
+    const handleStorageChange = () => {
+      loadProfileData()
+    }
+
+    window.addEventListener("storage", handleStorageChange)
+
+    // Clean up
+    return () => {
+      window.removeEventListener("storage", handleStorageChange)
+    }
+  }, [])
+
+  const dashboardStats = {
+    courses: 5,
+    assignmentsDue: 2,
+    unreadMessages: 3,
+  }
+
   return (
     <PageLayout role="student">
       <div className="space-y-6 py-6 px-4 md:px-6">
         {/* Welcome & Overview Panel */}
-        <WelcomePanel />
+        <WelcomePanel student={userProfile} stats={dashboardStats} />
 
         {/* Main Content Grid */}
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">

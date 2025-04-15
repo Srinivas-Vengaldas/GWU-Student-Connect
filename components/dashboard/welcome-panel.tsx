@@ -1,6 +1,6 @@
 "use client"
 
-import { useState } from "react"
+import { useState, useEffect } from "react"
 import Link from "next/link"
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
 import { Button } from "@/components/ui/button"
@@ -38,6 +38,44 @@ export function WelcomePanel({
   },
 }: Partial<WelcomePanelProps>) {
   const [isLoading, setIsLoading] = useState(false)
+  const [studentProfile, setStudentProfile] = useState(student)
+
+  // Listen for profile updates
+  useEffect(() => {
+    // Initial load from localStorage
+    const loadProfileData = () => {
+      const savedProfile = localStorage.getItem("gwConnectUserProfile")
+      if (savedProfile) {
+        try {
+          const userData = JSON.parse(savedProfile)
+          setStudentProfile((prev) => ({
+            ...prev,
+            name: userData.name || prev.name,
+            avatar: userData.avatar || prev.avatar,
+            program: userData.program || prev.program,
+            year: userData.year || prev.year,
+          }))
+        } catch (error) {
+          console.error("Error parsing profile data:", error)
+        }
+      }
+    }
+
+    // Load profile data initially
+    loadProfileData()
+
+    // Listen for storage events
+    const handleStorageChange = () => {
+      loadProfileData()
+    }
+
+    window.addEventListener("storage", handleStorageChange)
+
+    // Clean up
+    return () => {
+      window.removeEventListener("storage", handleStorageChange)
+    }
+  }, [])
 
   return (
     <Card className="border-none shadow-sm bg-gradient-to-r from-blue-50 to-indigo-50">
@@ -45,9 +83,9 @@ export function WelcomePanel({
         <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
           <div className="flex items-center gap-4">
             <Avatar className="h-14 w-14 sm:h-16 sm:w-16 border-2 border-white shadow-sm">
-              <AvatarImage src={student.avatar || "/placeholder.svg"} alt={student.name} />
+              <AvatarImage src={studentProfile.avatar || "/placeholder.svg"} alt={studentProfile.name} />
               <AvatarFallback className="text-lg bg-[#0033A0] text-white">
-                {student.name
+                {studentProfile.name
                   .split(" ")
                   .map((n) => n[0])
                   .join("")}
@@ -55,13 +93,13 @@ export function WelcomePanel({
             </Avatar>
             <div>
               <h1 className="text-xl sm:text-2xl font-bold tracking-tight text-[#0033A0]">
-                Welcome back, {student.name.split(" ")[0]}!
+                Welcome back, {studentProfile.name.split(" ")[0]}!
               </h1>
               <div className="flex flex-wrap items-center gap-2 mt-1">
                 <Badge variant="outline" className="text-xs font-normal">
-                  {student.program}
+                  {studentProfile.program}
                 </Badge>
-                <span className="text-sm text-muted-foreground">{student.year}</span>
+                <span className="text-sm text-muted-foreground">{studentProfile.year}</span>
               </div>
             </div>
           </div>

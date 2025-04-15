@@ -96,6 +96,9 @@ export function ProfileSettings({ onSave }: ProfileSettingsProps) {
         saveProfileImage(profile.avatar)
       }
 
+      // Dispatch a custom event to notify other components
+      window.dispatchEvent(new Event("storage"))
+
       setIsLoading(false)
       onSave()
     }, 1000)
