@@ -121,8 +121,6 @@ export default function StudyMaterialPage({ params }: { params: { id: string } }
       case "pdf":
         return <FileText className="h-12 w-12 text-red-500" />
       case "docx":
-        return <FileText className="h-12 w-12 text-blue-500\" text-blue-500" />
-      case "docx":
         return <FileText className="h-12 w-12 text-blue-500" />
       case "pptx":
         return <Presentation className="h-12 w-12 text-orange-500" />
@@ -137,16 +135,16 @@ export default function StudyMaterialPage({ params }: { params: { id: string } }
   const handleDownload = () => {
     // In a real app, you'd initiate a file download here
     console.log("Downloading material:", material.id)
-    
+
     // Track the download in localStorage
     const downloads = JSON.parse(localStorage.getItem("downloadedMaterials") || "[]")
     if (!downloads.includes(material.id)) {
       downloads.push(material.id)
       localStorage.setItem("downloadedMaterials", JSON.stringify(downloads))
     }
-    
+
     setIsDownloaded(true)
-    
+
     // Simulate download with a timeout
     setTimeout(() => {
       alert(`Downloaded: ${material.title}`)
@@ -155,7 +153,7 @@ export default function StudyMaterialPage({ params }: { params: { id: string } }
 
   const handleToggleFavorite = () => {
     setIsFavorite(!isFavorite)
-    
+
     // Update favorites in localStorage
     const favorites = JSON.parse(localStorage.getItem("favoriteMaterials") || "[]")
     if (isFavorite) {
@@ -198,7 +196,10 @@ export default function StudyMaterialPage({ params }: { params: { id: string } }
                         <Badge variant="outline">{material.fileType.toUpperCase()}</Badge>
                         <Badge variant="outline">{material.fileSize}</Badge>
                         {material.isVerified && (
-                          <Badge variant="outline" className="bg-green-50 text-green-700 border-green-200 flex items-center gap-1">
+                          <Badge
+                            variant="outline"
+                            className="bg-green-50 text-green-700 border-green-200 flex items-center gap-1"
+                          >
                             <CheckCircle className="h-3 w-3" />
                             Verified
                           </Badge>
