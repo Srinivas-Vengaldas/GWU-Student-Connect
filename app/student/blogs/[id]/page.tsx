@@ -108,7 +108,7 @@ export default function BlogPost({ params }: { params: { id: string } }) {
 
                   <div className="flex items-center space-x-4">
                     <Avatar className="h-10 w-10">
-                      <AvatarImage src={blog.author.avatar} alt={blog.author.name} />
+                      <AvatarImage src={blog.author.avatar || "/placeholder.svg"} alt={blog.author.name} />
                       <AvatarFallback>{blog.author.initials}</AvatarFallback>
                     </Avatar>
                     <div>

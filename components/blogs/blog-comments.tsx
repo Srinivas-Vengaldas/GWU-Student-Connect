@@ -21,10 +21,12 @@ interface Comment {
 }
 
 interface BlogCommentsProps {
-  comments: Comment[]
+  blogId?: number | string
+  commentCount?: number
+  comments?: Comment[]
 }
 
-export function BlogComments({ comments }: BlogCommentsProps) {
+export function BlogComments({ blogId, commentCount = 0, comments = [] }: BlogCommentsProps) {
   const [newComment, setNewComment] = useState("")
 
   const handleSubmitComment = () => {
@@ -68,7 +70,7 @@ export function BlogComments({ comments }: BlogCommentsProps) {
 
   return (
     <div className="space-y-6">
-      <h3 className="text-lg font-medium">Comments ({comments.length})</h3>
+      <h3 className="text-lg font-medium">Comments ({commentCount})</h3>
 
       <div className="flex gap-3">
         <UserAvatar user={{ id: "current-user", name: "You" }} size="sm" />
@@ -87,7 +89,7 @@ export function BlogComments({ comments }: BlogCommentsProps) {
         </div>
       </div>
 
-      <div className="space-y-6 mt-8">{comments.map((comment) => renderComment(comment))}</div>
+      {comments.length > 0 && <div className="space-y-6 mt-8">{comments.map((comment) => renderComment(comment))}</div>}
     </div>
   )
 }
