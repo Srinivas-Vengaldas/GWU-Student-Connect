@@ -33,20 +33,54 @@ import {
 import { useRouter } from "next/navigation"
 
 interface MaterialCardProps {
-  material: any
+  id?: string
+  title?: string
+  description?: string
+  fileType?: string
+  uploadDate?: string
+  downloads?: number
+  views?: number
+  uploader?: {
+    name: string
+    avatar?: string
+  }
+  tags?: string[]
+  rating?: number
+  ratingCount?: number
+  fileSize?: string
+  isFavorite?: boolean
   isOwner?: boolean
+  material?: any // For backward compatibility
 }
 
-export function MaterialCard({ material, isOwner = false }: MaterialCardProps) {
+export function MaterialCard(props: MaterialCardProps) {
   const router = useRouter()
-  const [isFavorite, setIsFavorite] = useState(material.isFavorite)
+
+  // Handle both patterns: either a material object or individual properties
+  const material = props.material || props
+
+  const id = material.id || "unknown"
+  const title = material.title || "Untitled Material"
+  const description = material.description || ""
+  const fileType = material.fileType || "unknown"
+  const uploadDate = material.uploadDate || "Unknown date"
+  const downloads = material.downloads || 0
+  const views = material.views || 0
+  const uploader = material.uploader || { name: "Unknown User" }
+  const tags = material.tags || []
+  const rating = material.rating || 0
+  const ratingCount = material.ratingCount || 0
+  const fileSize = material.fileSize || "Unknown size"
+  const isOwner = props.isOwner || false
+
+  const [isFavorite, setIsFavorite] = useState(material.isFavorite || false)
   const [isDownloaded, setIsDownloaded] = useState(false)
 
   // Check if material is in downloads
   useEffect(() => {
     const downloads = JSON.parse(localStorage.getItem("downloadedMaterials") || "[]")
-    setIsDownloaded(downloads.includes(material.id))
-  }, [material.id])
+    setIsDownloaded(downloads.includes(id))
+  }, [id])
 
   const getFileIcon = (fileType: string | undefined) => {
     // Handle undefined or null fileType
@@ -78,13 +112,13 @@ export function MaterialCard({ material, isOwner = false }: MaterialCardProps) {
     // Update favorites in localStorage
     const favorites = JSON.parse(localStorage.getItem("favoriteMaterials") || "[]")
     if (isFavorite) {
-      const index = favorites.indexOf(material.id)
+      const index = favorites.indexOf(id)
       if (index > -1) {
         favorites.splice(index, 1)
       }
     } else {
-      if (!favorites.includes(material.id)) {
-        favorites.push(material.id)
+      if (!favorites.includes(id)) {
+        favorites.push(id)
       }
     }
     localStorage.setItem("favoriteMaterials", JSON.stringify(favorites))
@@ -95,12 +129,12 @@ export function MaterialCard({ material, isOwner = false }: MaterialCardProps) {
     e.stopPropagation()
 
     // In a real app, you'd initiate a file download here
-    console.log("Downloading material:", material.id)
+    console.log("Downloading material:", id)
 
     // Track the download in localStorage
     const downloads = JSON.parse(localStorage.getItem("downloadedMaterials") || "[]")
-    if (!downloads.includes(material.id)) {
-      downloads.push(material.id)
+    if (!downloads.includes(id)) {
+      downloads.push(id)
       localStorage.setItem("downloadedMaterials", JSON.stringify(downloads))
     }
 
@@ -108,12 +142,12 @@ export function MaterialCard({ material, isOwner = false }: MaterialCardProps) {
 
     // Simulate download with a timeout
     setTimeout(() => {
-      alert(`Downloaded: ${material.title}`)
+      alert(`Downloaded: ${title}`)
     }, 1000)
   }
 
   const handleCardClick = () => {
-    router.push(`/student/study-materials/${material.id}`)
+    router.push(`/student/study-materials/${id}`)
   }
 
   return (
@@ -121,7 +155,7 @@ export function MaterialCard({ material, isOwner = false }: MaterialCardProps) {
       <CardContent className="flex-1 p-4">
         <div className="flex items-center justify-between mb-3">
           <div className="flex items-center justify-center h-12 w-12 rounded-md bg-gray-100">
-            {getFileIcon(material.fileType)}
+            {getFileIcon(fileType)}
           </div>
           <div className="flex items-center gap-1">
             <Button
@@ -179,11 +213,11 @@ export function MaterialCard({ material, isOwner = false }: MaterialCardProps) {
             </DropdownMenu>
           </div>
         </div>
-        <h3 className="font-semibold text-[#0033A0] hover:underline line-clamp-2">{material.title}</h3>
-        <p className="text-sm text-gray-700 mt-1 line-clamp-2">{material.description}</p>
+        <h3 className="font-semibold text-[#0033A0] hover:underline line-clamp-2">{title}</h3>
+        <p className="text-sm text-gray-700 mt-1 line-clamp-2">{description}</p>
         <div className="mt-2 flex flex-wrap gap-1">
-          {material.tags &&
-            material.tags.slice(0, 2).map((tag: string) => (
+          {tags &&
+            tags.slice(0, 2).map((tag: string) => (
               <Badge key={tag} variant="secondary" className="text-xs">
                 {tag}
               </Badge>
@@ -192,25 +226,22 @@ export function MaterialCard({ material, isOwner = false }: MaterialCardProps) {
         <div className="mt-3 flex items-center justify-between text-xs text-gray-500">
           <div className="flex items-center">
             <Avatar className="h-5 w-5 mr-1">
-              <AvatarImage
-                src={material.uploader?.avatar || "/placeholder.svg"}
-                alt={material.uploader?.name || "User"}
-              />
-              <AvatarFallback>{material.uploader?.name?.charAt(0) || "U"}</AvatarFallback>
+              <AvatarImage src={uploader?.avatar || "/placeholder.svg"} alt={uploader?.name || "User"} />
+              <AvatarFallback>{uploader?.name?.charAt(0) || "U"}</AvatarFallback>
             </Avatar>
-            <span>{material.uploader?.name || "Unknown User"}</span>
+            <span>{uploader?.name || "Unknown User"}</span>
           </div>
           <div className="flex items-center gap-1">
             <Star className="h-4 w-4 text-yellow-500 fill-yellow-500" />
             <span>
-              {material.rating || "0"} ({material.ratingCount || "0"})
+              {rating || "0"} ({ratingCount || "0"})
             </span>
           </div>
         </div>
       </CardContent>
       <CardFooter className="pt-0 pb-4 px-4">
         <div className="w-full flex items-center justify-between">
-          <span className="text-xs text-gray-500">{material.uploadDate || "Unknown date"}</span>
+          <span className="text-xs text-gray-500">{uploadDate}</span>
           <TooltipProvider>
             <Tooltip>
               <TooltipTrigger asChild>
@@ -225,7 +256,7 @@ export function MaterialCard({ material, isOwner = false }: MaterialCardProps) {
               </TooltipTrigger>
               <TooltipContent>
                 <p>
-                  {material.downloads || "0"} downloads • {material.fileSize || "Unknown size"}
+                  {downloads} downloads • {fileSize}
                 </p>
               </TooltipContent>
             </Tooltip>

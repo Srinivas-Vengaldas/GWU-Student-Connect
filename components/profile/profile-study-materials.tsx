@@ -14,7 +14,7 @@ export function ProfileStudyMaterials({ student, limit }: ProfileStudyMaterialsP
   // This would be fetched from an API in a real app
   const materials = [
     {
-      id: 1,
+      id: "1",
       title: "Introduction to Cognitive Psychology - Lecture Notes",
       description:
         "Comprehensive notes from the introductory cognitive psychology lectures covering memory, attention, and perception theories.",
@@ -32,7 +32,7 @@ export function ProfileStudyMaterials({ student, limit }: ProfileStudyMaterialsP
       uploadDate: "Mar 15, 2024",
     },
     {
-      id: 2,
+      id: "2",
       title: "Research Methods in Psychology - Study Guide",
       description:
         "A detailed study guide for the research methods course, including experimental design, statistical analysis, and ethical considerations.",
@@ -50,7 +50,7 @@ export function ProfileStudyMaterials({ student, limit }: ProfileStudyMaterialsP
       uploadDate: "Feb 20, 2024",
     },
     {
-      id: 3,
+      id: "3",
       title: "Neuroscience Fundamentals - Presentation",
       description:
         "Slides covering the fundamentals of neuroscience, including neural structure, function, and communication.",
@@ -68,7 +68,7 @@ export function ProfileStudyMaterials({ student, limit }: ProfileStudyMaterialsP
       uploadDate: "Apr 5, 2024",
     },
     {
-      id: 4,
+      id: "4",
       title: "Statistical Analysis for Psychology - Practice Problems",
       description: "Practice problems and solutions for statistical methods commonly used in psychological research.",
       fileType: "pdf",

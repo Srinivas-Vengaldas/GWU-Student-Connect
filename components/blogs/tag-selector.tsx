@@ -2,93 +2,111 @@
 
 import type React from "react"
 
-import { useState } from "react"
-import { X } from "lucide-react"
-import { Badge } from "@/components/ui/badge"
+import { useState, useEffect } from "react"
+import { X, Plus } from "lucide-react"
 import { Input } from "@/components/ui/input"
 import { Button } from "@/components/ui/button"
+import { Badge } from "@/components/ui/badge"
 
-export function TagSelector() {
-  const [tags, setTags] = useState<string[]>([])
+interface TagSelectorProps {
+  onTagsChange?: (tags: string[]) => void
+  initialTags?: string[]
+}
+
+export function TagSelector({ onTagsChange, initialTags = [] }: TagSelectorProps) {
+  const [tags, setTags] = useState<string[]>(initialTags)
   const [inputValue, setInputValue] = useState("")
 
-  const suggestedTags = [
-    "Study Tips",
-    "Career",
-    "Campus Life",
-    "Mental Health",
-    "Technology",
-    "Research",
-    "Internships",
-    "Student Life",
-    "Academics",
-    "Events",
-  ]
+  useEffect(() => {
+    if (onTagsChange) {
+      onTagsChange(tags)
+    }
+  }, [tags, onTagsChange])
 
-  const addTag = (tag: string) => {
-    const trimmedTag = tag.trim()
-    if (trimmedTag && !tags.includes(trimmedTag)) {
-      setTags([...tags, trimmedTag])
+  const handleAddTag = () => {
+    if (inputValue.trim() && !tags.includes(inputValue.trim())) {
+      const newTags = [...tags, inputValue.trim()]
+      setTags(newTags)
       setInputValue("")
     }
   }
 
-  const removeTag = (tagToRemove: string) => {
+  const handleRemoveTag = (tagToRemove: string) => {
     setTags(tags.filter((tag) => tag !== tagToRemove))
   }
 
   const handleKeyDown = (e: React.KeyboardEvent) => {
-    if (e.key === "Enter" || e.key === ",") {
+    if (e.key === "Enter") {
       e.preventDefault()
-      addTag(inputValue)
+      handleAddTag()
     }
   }
 
+  // Suggested tags
+  const suggestedTags = [
+    "Study Tips",
+    "Research",
+    "Career",
+    "Campus Life",
+    "Technology",
+    "Mental Health",
+    "Internships",
+    "Productivity",
+    "Courses",
+    "Student Life",
+  ].filter((tag) => !tags.includes(tag))
+
   return (
-    <div className="space-y-3">
-      <div className="flex flex-wrap gap-2 min-h-[38px] p-2 border rounded-md">
-        {tags.map((tag) => (
-          <Badge key={tag} variant="secondary" className="flex items-center gap-1">
-            {tag}
-            <Button
-              variant="ghost"
-              size="sm"
-              onClick={() => removeTag(tag)}
-              className="h-4 w-4 p-0 hover:bg-transparent"
-            >
-              <X className="h-3 w-3" />
-              <span className="sr-only">Remove {tag}</span>
-            </Button>
-          </Badge>
-        ))}
+    <div className="space-y-4">
+      <div className="flex space-x-2">
         <Input
-          type="text"
+          placeholder="Add a tag..."
           value={inputValue}
           onChange={(e) => setInputValue(e.target.value)}
           onKeyDown={handleKeyDown}
-          placeholder={tags.length ? "Add more tags..." : "Add tags..."}
-          className="flex-1 min-w-[120px] border-0 p-0 h-7 focus-visible:ring-0"
         />
+        <Button type="button" onClick={handleAddTag} disabled={!inputValue.trim()}>
+          <Plus className="h-4 w-4" />
+        </Button>
       </div>
 
-      {inputValue && <div className="text-sm text-muted-foreground">Press Enter or add a comma to create a tag</div>}
-
-      <div className="flex flex-wrap gap-2">
-        <span className="text-sm text-muted-foreground pt-1">Suggested:</span>
-        {suggestedTags
-          .filter((tag) => !tags.includes(tag))
-          .slice(0, 5)
-          .map((tag) => (
-            <Badge
-              key={tag}
-              variant="outline"
-              className="cursor-pointer hover:bg-secondary"
-              onClick={() => addTag(tag)}
-            >
-              {tag}
-            </Badge>
-          ))}
+      <div className="flex flex-wrap gap-2 mt-2">
+        {tags.map((tag) => (
+          <Badge key={tag} variant="secondary" className="flex items-center gap-1 px-2 py-1">
+            {tag}
+            <button type="button" onClick={() => handleRemoveTag(tag)} className="rounded-full hover:bg-gray-200 p-0.5">
+              <X className="h-3 w-3" />
+              <span className="sr-only">Remove {tag}</span>
+            </button>
+          </Badge>
+        ))}
       </div>
+
+      {tags.length === 0 && (
+        <p className="text-sm text-gray-500">No tags added yet. Tags help others discover your post.</p>
+      )}
+
+      {suggestedTags.length > 0 && (
+        <div className="mt-4">
+          <p className="text-sm font-medium mb-2">Suggested tags:</p>
+          <div className="flex flex-wrap gap-2">
+            {suggestedTags.slice(0, 8).map((tag) => (
+              <Badge
+                key={tag}
+                variant="outline"
+                className="cursor-pointer hover:bg-gray-100"
+                onClick={() => {
+                  if (!tags.includes(tag)) {
+                    setTags([...tags, tag])
+                  }
+                }}
+              >
+                {tag}
+              </Badge>
+            ))}
+          </div>
+        </div>
+      )}
     </div>
   )
 }

@@ -2,6 +2,7 @@
 
 import { useEffect } from "react"
 import { useRouter } from "next/navigation"
+import { PageLayout } from "@/components/page-layout"
 
 export default function AlumniDirectoryPage() {
   const router = useRouter()
@@ -12,5 +13,11 @@ export default function AlumniDirectoryPage() {
     router.push("/student/directory")
   }, [router])
 
-  return null
+  return (
+    <PageLayout role="alumni">
+      <div className="flex items-center justify-center h-screen">
+        <p>Redirecting to student directory...</p>
+      </div>
+    </PageLayout>
+  )
 }

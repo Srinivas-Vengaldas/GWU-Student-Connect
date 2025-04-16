@@ -1,13 +1,24 @@
 "use client"
 
-import { useState } from "react"
+import { useState, useEffect } from "react"
 import { Bold, Italic, List, ListOrdered, ImageIcon, Code, LinkIcon, Heading1, Heading2 } from "lucide-react"
 import { Button } from "@/components/ui/button"
 import { Textarea } from "@/components/ui/textarea"
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip"
 
-export function BlogEditor() {
-  const [content, setContent] = useState("")
+interface BlogEditorProps {
+  onContentChange?: (content: string) => void
+  initialContent?: string
+}
+
+export function BlogEditor({ onContentChange, initialContent = "" }: BlogEditorProps) {
+  const [content, setContent] = useState(initialContent)
+
+  useEffect(() => {
+    if (onContentChange) {
+      onContentChange(content)
+    }
+  }, [content, onContentChange])
 
   const insertFormatting = (prefix: string, suffix: string = prefix) => {
     const textarea = document.querySelector("textarea")

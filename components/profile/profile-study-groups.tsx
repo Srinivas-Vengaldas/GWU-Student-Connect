@@ -1,3 +1,6 @@
+"use client"
+
+import { useEffect, useState } from "react"
 import Link from "next/link"
 import Image from "next/image"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
@@ -11,97 +14,161 @@ interface ProfileStudyGroupsProps {
 }
 
 export function ProfileStudyGroups({ student, limit }: ProfileStudyGroupsProps) {
-  // This would be fetched from an API in a real app
-  const groups = [
-    {
-      id: 1,
-      name: "Cognitive Psychology Study Group",
-      course: "PSY 201",
-      subject: "Psychology",
-      description: "Weekly study sessions focusing on cognitive psychology topics and exam preparation.",
-      members: 12,
-      visibility: "public",
-      banner: "/placeholder.svg?height=100&width=300",
-      tags: ["Cognitive", "Memory", "Attention"],
-      created: "2 months ago",
-      lastActive: "2 days ago",
-      isAdmin: true,
-      isMember: true,
-      admins: [
-        {
-          id: student.id,
-          name: student.name,
-          avatar: student.avatar,
-        },
-      ],
-    },
-    {
-      id: 2,
-      name: "Research Methods Collaboration",
-      course: "PSY 300",
-      subject: "Psychology",
-      description: "Group for collaborating on research methods assignments and sharing resources.",
-      members: 8,
-      visibility: "private",
-      banner: "/placeholder.svg?height=100&width=300",
-      tags: ["Research", "Methods", "Statistics"],
-      created: "3 months ago",
-      lastActive: "1 week ago",
-      isAdmin: false,
-      isMember: true,
-      admins: [
-        {
-          id: "user123",
-          name: "Emily Parker",
-          avatar: "/placeholder.svg?height=32&width=32",
-        },
-      ],
-    },
-    {
-      id: 3,
-      name: "Neuroscience Discussion Group",
-      course: "PSY 315",
-      subject: "Psychology",
-      description: "In-depth discussions on neuroscience topics and current research.",
-      members: 15,
-      visibility: "invite-only",
-      banner: "/placeholder.svg?height=100&width=300",
-      tags: ["Neuroscience", "Brain", "Neural Networks"],
-      created: "1 month ago",
-      lastActive: "3 days ago",
-      isAdmin: false,
-      isMember: true,
-      admins: [
-        {
-          id: "user456",
-          name: "Dr. Michael Chen",
-          avatar: "/placeholder.svg?height=32&width=32",
-        },
-      ],
-    },
-    {
-      id: 4,
-      name: "Psychology & Tech Intersection",
-      course: "PSY 410",
-      subject: "Psychology",
-      description: "Exploring the intersection of psychology and technology, including AI applications.",
-      members: 10,
-      visibility: "public",
-      banner: "/placeholder.svg?height=100&width=300",
-      tags: ["Technology", "AI", "Digital Psychology"],
-      created: "2 weeks ago",
-      lastActive: "1 day ago",
-      isAdmin: true,
-      isMember: true,
-      admins: [
-        {
-          id: student.id,
-          name: student.name,
-          avatar: student.avatar,
-        },
-      ],
-    },
-  ]
+  const [groups, setGroups] = useState<any[]>([])
+
+  useEffect(() => {
+    // In a real app, you'd fetch the user's study groups from an API
+    const fetchUserGroups = () => {
+      try {
+        // Get user's joined group IDs
+        const userGroupIds = JSON.parse(localStorage.getItem("gwUserStudyGroups") || "[]")
+
+        // Get all groups
+        const allGroups = JSON.parse(localStorage.getItem("gwStudyGroups") || "[]")
+
+        // Filter to only include joined groups
+        const joinedGroups = allGroups.filter((group: any) => userGroupIds.includes(group.id))
+
+        // If no joined groups, use default mock data
+        if (joinedGroups.length === 0) {
+          setGroups([
+            {
+              id: 1,
+              name: "Cognitive Psychology Study Group",
+              course: "PSY 201",
+              subject: "Psychology",
+              description: "Weekly study sessions focusing on cognitive psychology topics and exam preparation.",
+              members: 12,
+              visibility: "public",
+              banner: "/placeholder.svg?height=100&width=300",
+              tags: ["Cognitive", "Memory", "Attention"],
+              created: "2 months ago",
+              lastActive: "2 days ago",
+              isAdmin: true,
+              isMember: true,
+              admins: [
+                {
+                  id: student.id,
+                  name: student.name,
+                  avatar: student.avatar,
+                },
+              ],
+            },
+            {
+              id: 2,
+              name: "Research Methods Collaboration",
+              course: "PSY 300",
+              subject: "Psychology",
+              description: "Group for collaborating on research methods assignments and sharing resources.",
+              members: 8,
+              visibility: "private",
+              banner: "/placeholder.svg?height=100&width=300",
+              tags: ["Research", "Methods", "Statistics"],
+              created: "3 months ago",
+              lastActive: "1 week ago",
+              isAdmin: false,
+              isMember: true,
+              admins: [
+                {
+                  id: "user123",
+                  name: "Emily Parker",
+                  avatar: "/placeholder.svg?height=32&width=32",
+                },
+              ],
+            },
+            {
+              id: 3,
+              name: "Neuroscience Discussion Group",
+              course: "PSY 315",
+              subject: "Psychology",
+              description: "In-depth discussions on neuroscience topics and current research.",
+              members: 15,
+              visibility: "invite-only",
+              banner: "/placeholder.svg?height=100&width=300",
+              tags: ["Neuroscience", "Brain", "Neural Networks"],
+              created: "1 month ago",
+              lastActive: "3 days ago",
+              isAdmin: false,
+              isMember: true,
+              admins: [
+                {
+                  id: "user456",
+                  name: "Dr. Michael Chen",
+                  avatar: "/placeholder.svg?height=32&width=32",
+                },
+              ],
+            },
+            {
+              id: 4,
+              name: "Psychology & Tech Intersection",
+              course: "PSY 410",
+              subject: "Psychology",
+              description: "Exploring the intersection of psychology and technology, including AI applications.",
+              members: 10,
+              visibility: "public",
+              banner: "/placeholder.svg?height=100&width=300",
+              tags: ["Technology", "AI", "Digital Psychology"],
+              created: "2 weeks ago",
+              lastActive: "1 day ago",
+              isAdmin: true,
+              isMember: true,
+              admins: [
+                {
+                  id: student.id,
+                  name: student.name,
+                  avatar: student.avatar,
+                },
+              ],
+            },
+          ])
+        } else {
+          // Enrich joined groups with additional data
+          const enrichedGroups = joinedGroups.map((group: any) => ({
+            ...group,
+            isAdmin: group.creator === student.name,
+            isMember: true,
+            banner: group.banner || "/placeholder.svg?height=100&width=300",
+            admins: [
+              {
+                id: "creator",
+                name: group.creator || "Group Creator",
+                avatar: group.creatorAvatar || "/placeholder.svg?height=32&width=32",
+              },
+            ],
+          }))
+
+          setGroups(enrichedGroups)
+        }
+      } catch (error) {
+        console.error("Error fetching user groups:", error)
+        // Fallback to empty array
+        setGroups([])
+      }
+    }
+
+    fetchUserGroups()
+
+    // Listen for storage changes to update the groups list
+    const handleStorageChange = (e: StorageEvent) => {
+      if (e.key === "gwUserStudyGroups" || e.key === "gwStudyGroups") {
+        fetchUserGroups()
+      }
+    }
+
+    window.addEventListener("storage", handleStorageChange)
+
+    // Custom event for local updates
+    const handleCustomEvent = () => {
+      fetchUserGroups()
+    }
+
+    window.addEventListener("gwStudyGroupsUpdated", handleCustomEvent)
+
+    return () => {
+      window.removeEventListener("storage", handleStorageChange)
+      window.removeEventListener("gwStudyGroupsUpdated", handleCustomEvent)
+    }
+  }, [student.id, student.name, student.avatar])
 
   const displayGroups = limit ? groups.slice(0, limit) : groups
 
@@ -167,12 +234,13 @@ export function ProfileStudyGroups({ student, limit }: ProfileStudyGroupsProps) 
                       </div>
                       <div className="flex items-center justify-between mt-2">
                         <div className="flex space-x-1">
-                          {group.tags.slice(0, 2).map((tag: string) => (
-                            <Badge key={tag} variant="secondary" className="text-xs">
-                              {tag}
-                            </Badge>
-                          ))}
-                          {group.tags.length > 2 && (
+                          {group.tags &&
+                            group.tags.slice(0, 2).map((tag: string) => (
+                              <Badge key={tag} variant="secondary" className="text-xs">
+                                {tag}
+                              </Badge>
+                            ))}
+                          {group.tags && group.tags.length > 2 && (
                             <Badge variant="secondary" className="text-xs">
                               +{group.tags.length - 2}
                             </Badge>
@@ -203,6 +271,11 @@ export function ProfileStudyGroups({ student, limit }: ProfileStudyGroupsProps) 
           <div className="py-12 text-center text-gray-500">
             <Users className="mx-auto h-12 w-12 text-gray-300" />
             <p className="mt-2">No study groups yet</p>
+            <Link href="/student/study-groups">
+              <Button variant="outline" size="sm" className="mt-4">
+                Browse Study Groups
+              </Button>
+            </Link>
           </div>
         )}
       </CardContent>

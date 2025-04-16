@@ -1,15 +1,15 @@
 "use client"
 
 import { useState, useCallback } from "react"
+import { MessageSidebar } from "@/components/messages/message-sidebar"
+import { MessagePanel } from "@/components/messages/message-panel"
+import { MessageComposer } from "@/components/messages/message-composer"
+import { MessageHeader } from "@/components/messages/message-header"
+import { EmptyState } from "@/components/messages/empty-state"
 import { PageLayout } from "@/components/page-layout"
 import { useMediaQuery } from "@/hooks/use-media-query"
-import { FacultyMessageSidebar } from "@/components/faculty-messages/faculty-message-sidebar"
-import { FacultyMessagePanel } from "@/components/faculty-messages/faculty-message-panel"
-import { FacultyMessageComposer } from "@/components/faculty-messages/faculty-message-composer"
-import { FacultyMessageHeader } from "@/components/faculty-messages/faculty-message-header"
-import { FacultyEmptyState } from "@/components/faculty-messages/faculty-empty-state"
 
-export default function FacultyMessagesPage() {
+export default function AlumniMessagesPage() {
   const [selectedConversation, setSelectedConversation] = useState<string | null>(null)
   const [showSidebar, setShowSidebar] = useState(true)
   const isMobile = useMediaQuery("(max-width: 768px)")
@@ -44,12 +44,12 @@ export default function FacultyMessagesPage() {
   }, [])
 
   return (
-    <PageLayout role="faculty">
+    <PageLayout role="alumni">
       <div className="flex-1 rounded-lg border shadow-sm overflow-hidden">
         <div className="flex h-[calc(100vh-12rem)] md:h-[600px] flex-col md:flex-row">
           {/* Conversation List Sidebar */}
           {(showSidebar || !isMobile) && (
-            <FacultyMessageSidebar
+            <MessageSidebar
               activeConversationId={selectedConversation}
               onSelectConversation={handleConversationSelect}
               className={isMobile ? "w-full" : "w-80 border-r"}
@@ -61,16 +61,16 @@ export default function FacultyMessagesPage() {
             <div className="flex flex-1 flex-col">
               {selectedConversation ? (
                 <>
-                  <FacultyMessageHeader
+                  <MessageHeader
                     conversationId={selectedConversation}
                     onBack={handleBackToList}
                     showBackButton={isMobile}
                   />
-                  <FacultyMessagePanel conversationId={selectedConversation} onMessagesInit={handleMessagesInit} />
-                  <FacultyMessageComposer conversationId={selectedConversation} onSendMessage={handleSendMessage} />
+                  <MessagePanel conversationId={selectedConversation} onMessagesInit={handleMessagesInit} />
+                  <MessageComposer conversationId={selectedConversation} onSendMessage={handleSendMessage} />
                 </>
               ) : (
-                <FacultyEmptyState />
+                <EmptyState />
               )}
             </div>
           )}

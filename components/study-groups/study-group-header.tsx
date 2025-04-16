@@ -2,6 +2,7 @@
 
 import { useState } from "react"
 import Image from "next/image"
+import Link from "next/link"
 import { Button } from "@/components/ui/button"
 import { Badge } from "@/components/ui/badge"
 import {
@@ -38,27 +39,50 @@ import {
 
 interface StudyGroupHeaderProps {
   group: any
+  onJoin?: () => void
+  onLeave?: () => void
+  onFollowCreator?: () => void
+  onUnfollowCreator?: () => void
+  isFollowingCreator?: boolean
 }
 
-export function StudyGroupHeader({ group }: StudyGroupHeaderProps) {
+export function StudyGroupHeader({
+  group,
+  onJoin,
+  onLeave,
+  onFollowCreator,
+  onUnfollowCreator,
+  isFollowingCreator = false,
+}: StudyGroupHeaderProps) {
   const [isJoined, setIsJoined] = useState(group.isMember)
   const [isNotificationsEnabled, setIsNotificationsEnabled] = useState(true)
   const [showLeaveDialog, setShowLeaveDialog] = useState(false)
+  const [showCreatorProfile, setShowCreatorProfile] = useState(false)
 
   const handleJoinGroup = () => {
     // In a real app, you'd call an API to join the group
     setIsJoined(true)
+    if (onJoin) onJoin()
   }
 
   const handleLeaveGroup = () => {
     // In a real app, you'd call an API to leave the group
     setIsJoined(false)
     setShowLeaveDialog(false)
+    if (onLeave) onLeave()
   }
 
   const toggleNotifications = () => {
     // In a real app, you'd call an API to toggle notifications
     setIsNotificationsEnabled(!isNotificationsEnabled)
+  }
+
+  const handleFollowCreator = () => {
+    if (onFollowCreator) onFollowCreator()
+  }
+
+  const handleUnfollowCreator = () => {
+    if (onUnfollowCreator) onUnfollowCreator()
   }
 
   return (
@@ -144,11 +168,12 @@ export function StudyGroupHeader({ group }: StudyGroupHeaderProps) {
           <p className="mt-4 text-gray-700">{group.description}</p>
 
           <div className="mt-4 flex flex-wrap gap-2">
-            {group.tags.map((tag: string) => (
-              <Badge key={tag} variant="secondary">
-                {tag}
-              </Badge>
-            ))}
+            {group.tags &&
+              group.tags.map((tag: string) => (
+                <Badge key={tag} variant="secondary">
+                  {tag}
+                </Badge>
+              ))}
           </div>
 
           <div className="mt-6 flex flex-col sm:flex-row sm:items-center justify-between gap-4 pt-4 border-t">
@@ -158,23 +183,63 @@ export function StudyGroupHeader({ group }: StudyGroupHeaderProps) {
                 <span className="text-sm text-gray-500">{group.members} members</span>
               </div>
               <div className="flex -space-x-2">
-                {group.admins.map((admin: any) => (
-                  <Avatar key={admin.id} className="h-6 w-6 border-2 border-white">
-                    <AvatarImage src={admin.avatar} alt={admin.name} />
-                    <AvatarFallback>{admin.name.charAt(0)}</AvatarFallback>
-                  </Avatar>
-                ))}
-                {group.members > group.admins.length && (
+                {group.admins &&
+                  group.admins.map((admin: any) => (
+                    <Avatar
+                      key={admin.id}
+                      className="h-6 w-6 border-2 border-white cursor-pointer"
+                      onClick={() => setShowCreatorProfile(!showCreatorProfile)}
+                    >
+                      <AvatarImage src={admin.avatar || "/placeholder.svg"} alt={admin.name} />
+                      <AvatarFallback>{admin.name.charAt(0)}</AvatarFallback>
+                    </Avatar>
+                  ))}
+                {group.members > (group.admins?.length || 0) && (
                   <div className="flex h-6 w-6 items-center justify-center rounded-full bg-gray-100 text-xs text-gray-500 border-2 border-white">
-                    +{group.members - group.admins.length}
+                    +{group.members - (group.admins?.length || 0)}
                   </div>
                 )}
               </div>
             </div>
             <div className="text-sm text-gray-500">
-              Created {group.created} • Active {group.lastActive}
+              Created {group.created ? new Date(group.created).toLocaleDateString() : "recently"} • Active{" "}
+              {group.lastActive}
             </div>
           </div>
+
+          {/* Creator Profile Card */}
+          {showCreatorProfile && group.admins && group.admins.length > 0 && (
+            <div className="mt-4 p-4 border rounded-lg bg-gray-50">
+              <div className="flex justify-between items-center">
+                <div className="flex items-center gap-3">
+                  <Avatar className="h-10 w-10">
+                    <AvatarImage src={group.admins[0].avatar || "/placeholder.svg"} alt={group.admins[0].name} />
+                    <AvatarFallback>{group.admins[0].name.charAt(0)}</AvatarFallback>
+                  </Avatar>
+                  <div>
+                    <h3 className="font-medium">{group.admins[0].name}</h3>
+                    <p className="text-sm text-gray-500">Group Creator</p>
+                  </div>
+                </div>
+                <div className="flex gap-2">
+                  <Link href={`/student/messages?user=${group.admins[0].id}`}>
+                    <Button variant="outline" size="sm">
+                      Message
+                    </Button>
+                  </Link>
+                  {isFollowingCreator ? (
+                    <Button variant="outline" size="sm" onClick={handleUnfollowCreator}>
+                      Unfollow
+                    </Button>
+                  ) : (
+                    <Button size="sm" className="bg-[#0033A0] hover:bg-[#002180]" onClick={handleFollowCreator}>
+                      Follow
+                    </Button>
+                  )}
+                </div>
+              </div>
+            </div>
+          )}
         </div>
       </div>
 

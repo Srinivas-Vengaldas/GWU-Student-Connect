@@ -34,6 +34,10 @@ export default function StudyMaterialsPage() {
         avatar: "/placeholder.svg?height=32&width=32",
       },
       tags: ["Calculus", "Final Exam", "Study Guide", "Mathematics"],
+      isFavorite: false,
+      rating: 4.8,
+      ratingCount: 24,
+      fileSize: "2.4 MB",
     },
     {
       id: "2",
@@ -48,6 +52,10 @@ export default function StudyMaterialsPage() {
         avatar: "/placeholder.svg?height=32&width=32",
       },
       tags: ["Psychology", "Lecture Notes", "Introduction"],
+      isFavorite: false,
+      rating: 4.5,
+      ratingCount: 18,
+      fileSize: "1.8 MB",
     },
     {
       id: "3",
@@ -62,6 +70,10 @@ export default function StudyMaterialsPage() {
         avatar: "/placeholder.svg?height=32&width=32",
       },
       tags: ["Chemistry", "Lab Report", "Template", "Organic Chemistry"],
+      isFavorite: false,
+      rating: 4.7,
+      ratingCount: 15,
+      fileSize: "1.2 MB",
     },
     {
       id: "4",
@@ -76,6 +88,10 @@ export default function StudyMaterialsPage() {
         avatar: "/placeholder.svg?height=32&width=32",
       },
       tags: ["History", "American History", "Timeline", "Presentation"],
+      isFavorite: false,
+      rating: 4.3,
+      ratingCount: 12,
+      fileSize: "5.6 MB",
     },
     {
       id: "5",
@@ -90,6 +106,10 @@ export default function StudyMaterialsPage() {
         avatar: "/placeholder.svg?height=32&width=32",
       },
       tags: ["Computer Science", "Data Structures", "Algorithms", "Cheat Sheet"],
+      isFavorite: false,
+      rating: 4.9,
+      ratingCount: 32,
+      fileSize: "1.5 MB",
     },
     {
       id: "6",
@@ -104,6 +124,10 @@ export default function StudyMaterialsPage() {
         avatar: "/placeholder.svg?height=32&width=32",
       },
       tags: ["Spanish", "Language", "Verb Conjugation", "Grammar"],
+      isFavorite: false,
+      rating: 4.6,
+      ratingCount: 20,
+      fileSize: "2.1 MB",
     },
     {
       id: "7",
@@ -118,6 +142,10 @@ export default function StudyMaterialsPage() {
         avatar: "/placeholder.svg?height=32&width=32",
       },
       tags: ["Physics", "Formulas", "Constants", "Reference"],
+      isFavorite: false,
+      rating: 4.8,
+      ratingCount: 25,
+      fileSize: "1.8 MB",
     },
     {
       id: "8",
@@ -132,6 +160,10 @@ export default function StudyMaterialsPage() {
         avatar: "/placeholder.svg?height=32&width=32",
       },
       tags: ["Business", "Ethics", "Case Studies", "Management"],
+      isFavorite: false,
+      rating: 4.4,
+      ratingCount: 16,
+      fileSize: "3.2 MB",
     },
   ]
 
@@ -274,7 +306,7 @@ export default function StudyMaterialsPage() {
             ) : view === "grid" ? (
               <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
                 {filteredMaterials.map((material) => (
-                  <MaterialCard key={material.id} {...material} />
+                  <MaterialCard key={material.id} material={material} />
                 ))}
               </div>
             ) : (

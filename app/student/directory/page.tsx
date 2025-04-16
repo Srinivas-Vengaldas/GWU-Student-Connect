@@ -1,10 +1,7 @@
 "use client"
 
 import { useState, useEffect } from "react"
-import { MainNav } from "@/components/main-nav"
-import { Footer } from "@/components/footer"
-import { DashboardHeader } from "@/components/dashboard-header"
-import { DashboardNav } from "@/components/dashboard-nav"
+import { PageLayout } from "@/components/page-layout"
 import { Card, CardContent } from "@/components/ui/card"
 import { Button } from "@/components/ui/button"
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
@@ -314,410 +311,392 @@ export default function DirectoryPage() {
   }
 
   return (
-    <div className="flex min-h-screen flex-col">
-      <header className="sticky top-0 z-50 w-full border-b bg-white">
-        <div className="container flex h-16 items-center">
-          <MainNav />
-          <DashboardHeader role="student" />
+    <PageLayout role="student">
+      <div className="flex-1 space-y-4 p-4 md:p-8 pt-6">
+        <div className="flex flex-col space-y-2">
+          <h2 className="text-3xl font-bold tracking-tight">Directory</h2>
+          <p className="text-muted-foreground">Search and connect with students, faculty, and alumni across GW.</p>
         </div>
-      </header>
-      <div className="container flex-1 items-start md:grid md:grid-cols-[220px_1fr] md:gap-6 lg:grid-cols-[240px_1fr] lg:gap-10 py-8">
-        <aside className="fixed top-14 z-30 -ml-2 hidden h-[calc(100vh-3.5rem)] w-full shrink-0 md:sticky md:block">
-          <DashboardNav role="student" />
-        </aside>
-        <main className="flex w-full flex-col overflow-hidden">
-          <div className="flex-1 space-y-4 p-4 md:p-8 pt-6">
-            <div className="flex flex-col space-y-2">
-              <h2 className="text-3xl font-bold tracking-tight">Directory</h2>
-              <p className="text-muted-foreground">Search and connect with students, faculty, and alumni across GW.</p>
-            </div>
 
-            {/* Search and Filters */}
-            <div className="grid grid-cols-1 gap-4">
-              <Card>
-                <CardContent className="p-6">
-                  <div className="flex flex-col space-y-4">
-                    <div className="relative">
-                      <Search className="absolute left-2.5 top-2.5 h-4 w-4 text-gray-500" />
-                      <Input
-                        type="search"
-                        placeholder="Search by name, GWID, course, school..."
-                        className="pl-8"
-                        value={searchQuery}
-                        onChange={(e) => setSearchQuery(e.target.value)}
-                      />
-                    </div>
-
-                    <Tabs defaultValue="all" value={activeTab} onValueChange={setActiveTab}>
-                      <TabsList className="grid w-full grid-cols-4">
-                        <TabsTrigger value="all">All</TabsTrigger>
-                        <TabsTrigger value="student">Students</TabsTrigger>
-                        <TabsTrigger value="faculty">Faculty</TabsTrigger>
-                        <TabsTrigger value="alumni">Alumni</TabsTrigger>
-                      </TabsList>
-                    </Tabs>
-                  </div>
-                </CardContent>
-              </Card>
-            </div>
-
-            <div className="grid grid-cols-1 md:grid-cols-[240px_1fr] gap-4">
-              {/* Filters Sidebar */}
-              <Card className="h-fit">
-                <CardContent className="p-6">
-                  <div className="flex items-center justify-between mb-4">
-                    <h3 className="font-semibold">Filters</h3>
-                    <Button variant="ghost" size="sm" className="h-8 px-2">
-                      Reset
-                    </Button>
-                  </div>
-
-                  <Accordion type="multiple" defaultValue={["school", "course", "status"]}>
-                    <AccordionItem value="school">
-                      <AccordionTrigger>School/Department</AccordionTrigger>
-                      <AccordionContent>
-                        <Select value={selectedSchool} onValueChange={setSelectedSchool}>
-                          <SelectTrigger>
-                            <SelectValue placeholder="Select school" />
-                          </SelectTrigger>
-                          <SelectContent>
-                            <SelectItem value="all">All Schools</SelectItem>
-                            {mockSchools.map((school) => (
-                              <SelectItem key={school} value={school}>
-                                {school}
-                              </SelectItem>
-                            ))}
-                          </SelectContent>
-                        </Select>
-                      </AccordionContent>
-                    </AccordionItem>
-
-                    <AccordionItem value="course">
-                      <AccordionTrigger>Course</AccordionTrigger>
-                      <AccordionContent>
-                        <Select value={selectedCourse} onValueChange={setSelectedCourse}>
-                          <SelectTrigger>
-                            <SelectValue placeholder="Select course" />
-                          </SelectTrigger>
-                          <SelectContent>
-                            <SelectItem value="all">All Courses</SelectItem>
-                            {mockCourses.map((course) => (
-                              <SelectItem key={course} value={course}>
-                                {course}
-                              </SelectItem>
-                            ))}
-                          </SelectContent>
-                        </Select>
-                      </AccordionContent>
-                    </AccordionItem>
-
-                    <AccordionItem value="status">
-                      <AccordionTrigger>Status</AccordionTrigger>
-                      <AccordionContent>
-                        <div className="flex items-center space-x-2 mb-2">
-                          <Checkbox
-                            id="online"
-                            checked={onlineOnly}
-                            onCheckedChange={(checked) => setOnlineOnly(checked === true)}
-                          />
-                          <label
-                            htmlFor="online"
-                            className="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70"
-                          >
-                            Online now
-                          </label>
-                        </div>
-                        <div className="flex items-center space-x-2">
-                          <Checkbox
-                            id="available"
-                            checked={availableOnly}
-                            onCheckedChange={(checked) => setAvailableOnly(checked === true)}
-                          />
-                          <label
-                            htmlFor="available"
-                            className="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70"
-                          >
-                            Available for appointments
-                          </label>
-                        </div>
-                      </AccordionContent>
-                    </AccordionItem>
-                  </Accordion>
-                </CardContent>
-              </Card>
-
-              {/* Search Results */}
-              <div className="space-y-4">
-                <div className="flex justify-between items-center">
-                  <h3 className="font-semibold">
-                    {filteredUsers.length} {filteredUsers.length === 1 ? "Result" : "Results"}
-                  </h3>
-                  <Select defaultValue="relevance">
-                    <SelectTrigger className="w-[180px]">
-                      <SelectValue placeholder="Sort by" />
-                    </SelectTrigger>
-                    <SelectContent>
-                      <SelectItem value="relevance">Sort by: Relevance</SelectItem>
-                      <SelectItem value="name-asc">Sort by: Name (A-Z)</SelectItem>
-                      <SelectItem value="name-desc">Sort by: Name (Z-A)</SelectItem>
-                      <SelectItem value="recent">Sort by: Recently Active</SelectItem>
-                    </SelectContent>
-                  </Select>
+        {/* Search and Filters */}
+        <div className="grid grid-cols-1 gap-4">
+          <Card>
+            <CardContent className="p-6">
+              <div className="flex flex-col space-y-4">
+                <div className="relative">
+                  <Search className="absolute left-2.5 top-2.5 h-4 w-4 text-gray-500" />
+                  <Input
+                    type="search"
+                    placeholder="Search by name, GWID, course, school..."
+                    className="pl-8"
+                    value={searchQuery}
+                    onChange={(e) => setSearchQuery(e.target.value)}
+                  />
                 </div>
 
-                {filteredUsers.length === 0 ? (
-                  <Card>
-                    <CardContent className="p-6 text-center">
-                      <div className="flex flex-col items-center justify-center py-8">
-                        <Search className="h-12 w-12 text-muted-foreground mb-4" />
-                        <h3 className="text-lg font-medium">No results found</h3>
-                        <p className="text-muted-foreground mt-2">
-                          Try adjusting your search or filters to find what you're looking for.
-                        </p>
-                      </div>
-                    </CardContent>
-                  </Card>
-                ) : (
-                  <div className="space-y-4">
-                    {filteredUsers.map((user) => (
-                      <Card key={user.id} className="overflow-hidden">
-                        <CardContent className="p-6">
-                          <div className="flex flex-col md:flex-row gap-4">
-                            <div className="flex flex-col items-center md:items-start">
-                              <div className="relative">
-                                <Avatar className="h-20 w-20">
-                                  <AvatarImage src={user.avatar || "/placeholder.svg"} alt={user.name} />
-                                  <AvatarFallback>{user.initials}</AvatarFallback>
-                                </Avatar>
-                                {user.online && (
-                                  <span className="absolute bottom-0 right-0 h-4 w-4 rounded-full bg-green-500 border-2 border-white" />
-                                )}
-                              </div>
-                              <div className="mt-2 flex flex-col items-center md:items-start">
-                                <Badge
-                                  variant={
-                                    user.role === "Student"
-                                      ? "default"
-                                      : user.role === "Faculty"
-                                        ? "secondary"
-                                        : "outline"
-                                  }
-                                >
-                                  {user.role}
-                                </Badge>
-                              </div>
-                            </div>
+                <Tabs defaultValue="all" value={activeTab} onValueChange={setActiveTab}>
+                  <TabsList className="grid w-full grid-cols-4">
+                    <TabsTrigger value="all">All</TabsTrigger>
+                    <TabsTrigger value="student">Students</TabsTrigger>
+                    <TabsTrigger value="faculty">Faculty</TabsTrigger>
+                    <TabsTrigger value="alumni">Alumni</TabsTrigger>
+                  </TabsList>
+                </Tabs>
+              </div>
+            </CardContent>
+          </Card>
+        </div>
 
-                            <div className="flex-1 space-y-2 text-center md:text-left">
-                              <div>
-                                <h3 className="text-xl font-bold">{user.name}</h3>
-                                <p className="text-sm text-muted-foreground">
-                                  @{user.username} • GWID: {user.gwid.substring(0, 4)}****
-                                </p>
-                              </div>
+        <div className="grid grid-cols-1 md:grid-cols-[240px_1fr] gap-4">
+          {/* Filters Sidebar */}
+          <Card className="h-fit">
+            <CardContent className="p-6">
+              <div className="flex items-center justify-between mb-4">
+                <h3 className="font-semibold">Filters</h3>
+                <Button variant="ghost" size="sm" className="h-8 px-2">
+                  Reset
+                </Button>
+              </div>
 
-                              <div className="grid grid-cols-1 md:grid-cols-2 gap-2">
-                                <div className="space-y-1">
-                                  {user.role === "Student" && (
-                                    <>
-                                      <p className="text-sm flex items-center">
-                                        <GraduationCap className="h-4 w-4 mr-2 text-muted-foreground" />
-                                        {user.school}
-                                      </p>
-                                      <p className="text-sm flex items-center">
-                                        <BookOpen className="h-4 w-4 mr-2 text-muted-foreground" />
-                                        {user.major} • {user.year}
-                                      </p>
-                                    </>
-                                  )}
-                                  {user.role === "Faculty" && (
-                                    <>
-                                      <p className="text-sm flex items-center">
-                                        <Briefcase className="h-4 w-4 mr-2 text-muted-foreground" />
-                                        {user.department}
-                                      </p>
-                                      <p className="text-sm flex items-center">
-                                        <BookOpen className="h-4 w-4 mr-2 text-muted-foreground" />
-                                        Teaches: {user.courses?.join(", ")}
-                                      </p>
-                                    </>
-                                  )}
-                                  {user.role === "Alumni" && (
-                                    <>
-                                      <p className="text-sm flex items-center">
-                                        <GraduationCap className="h-4 w-4 mr-2 text-muted-foreground" />
-                                        {user.school} • {user.year}
-                                      </p>
-                                      <p className="text-sm flex items-center">
-                                        <Briefcase className="h-4 w-4 mr-2 text-muted-foreground" />
-                                        {user.position} at {user.company}
-                                      </p>
-                                    </>
-                                  )}
-                                </div>
-                                <div className="space-y-1">
-                                  {user.availability && user.availability.length > 0 && (
-                                    <p className="text-sm flex items-center">
-                                      <Clock className="h-4 w-4 mr-2 text-muted-foreground" />
-                                      Available: {user.availability.join(", ")}
-                                    </p>
-                                  )}
-                                  {user.interests && (
-                                    <div className="flex flex-wrap gap-1 mt-1">
-                                      {user.interests.slice(0, 3).map((interest, i) => (
-                                        <Badge key={i} variant="outline" className="text-xs">
-                                          {interest}
-                                        </Badge>
-                                      ))}
-                                      {user.interests.length > 3 && (
-                                        <Badge variant="outline" className="text-xs">
-                                          +{user.interests.length - 3} more
-                                        </Badge>
-                                      )}
-                                    </div>
-                                  )}
-                                  {user.expertise && (
-                                    <div className="flex flex-wrap gap-1 mt-1">
-                                      {user.expertise.slice(0, 3).map((expertise, i) => (
-                                        <Badge key={i} variant="outline" className="text-xs">
-                                          {expertise}
-                                        </Badge>
-                                      ))}
-                                      {user.expertise.length > 3 && (
-                                        <Badge variant="outline" className="text-xs">
-                                          +{user.expertise.length - 3} more
-                                        </Badge>
-                                      )}
-                                    </div>
-                                  )}
-                                </div>
-                              </div>
-                            </div>
+              <Accordion type="multiple" defaultValue={["school", "course", "status"]}>
+                <AccordionItem value="school">
+                  <AccordionTrigger>School/Department</AccordionTrigger>
+                  <AccordionContent>
+                    <Select value={selectedSchool} onValueChange={setSelectedSchool}>
+                      <SelectTrigger>
+                        <SelectValue placeholder="Select school" />
+                      </SelectTrigger>
+                      <SelectContent>
+                        <SelectItem value="all">All Schools</SelectItem>
+                        {mockSchools.map((school) => (
+                          <SelectItem key={school} value={school}>
+                            {school}
+                          </SelectItem>
+                        ))}
+                      </SelectContent>
+                    </Select>
+                  </AccordionContent>
+                </AccordionItem>
 
-                            <div className="flex flex-row md:flex-col justify-center gap-2">
-                              <Button variant="outline" size="sm" asChild>
-                                <Link href={`/student/profile/${user.id}`}>
-                                  <User className="h-4 w-4 mr-2" />
-                                  Profile
-                                </Link>
-                              </Button>
-                              <Button variant="outline" size="sm" asChild>
-                                <Link href={`/student/messages?user=${user.id}`}>
-                                  <MessageSquare className="h-4 w-4 mr-2" />
-                                  Message
-                                </Link>
-                              </Button>
-                              {user.availability && user.availability.length > 0 && (
-                                <Button variant="outline" size="sm" onClick={() => handleBookAppointment(user)}>
-                                  <Calendar className="h-4 w-4 mr-2" />
-                                  Book
-                                </Button>
+                <AccordionItem value="course">
+                  <AccordionTrigger>Course</AccordionTrigger>
+                  <AccordionContent>
+                    <Select value={selectedCourse} onValueChange={setSelectedCourse}>
+                      <SelectTrigger>
+                        <SelectValue placeholder="Select course" />
+                      </SelectTrigger>
+                      <SelectContent>
+                        <SelectItem value="all">All Courses</SelectItem>
+                        {mockCourses.map((course) => (
+                          <SelectItem key={course} value={course}>
+                            {course}
+                          </SelectItem>
+                        ))}
+                      </SelectContent>
+                    </Select>
+                  </AccordionContent>
+                </AccordionItem>
+
+                <AccordionItem value="status">
+                  <AccordionTrigger>Status</AccordionTrigger>
+                  <AccordionContent>
+                    <div className="flex items-center space-x-2 mb-2">
+                      <Checkbox
+                        id="online"
+                        checked={onlineOnly}
+                        onCheckedChange={(checked) => setOnlineOnly(checked === true)}
+                      />
+                      <label
+                        htmlFor="online"
+                        className="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70"
+                      >
+                        Online now
+                      </label>
+                    </div>
+                    <div className="flex items-center space-x-2">
+                      <Checkbox
+                        id="available"
+                        checked={availableOnly}
+                        onCheckedChange={(checked) => setAvailableOnly(checked === true)}
+                      />
+                      <label
+                        htmlFor="available"
+                        className="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70"
+                      >
+                        Available for appointments
+                      </label>
+                    </div>
+                  </AccordionContent>
+                </AccordionItem>
+              </Accordion>
+            </CardContent>
+          </Card>
+
+          {/* Search Results */}
+          <div className="space-y-4">
+            <div className="flex justify-between items-center">
+              <h3 className="font-semibold">
+                {filteredUsers.length} {filteredUsers.length === 1 ? "Result" : "Results"}
+              </h3>
+              <Select defaultValue="relevance">
+                <SelectTrigger className="w-[180px]">
+                  <SelectValue placeholder="Sort by" />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="relevance">Sort by: Relevance</SelectItem>
+                  <SelectItem value="name-asc">Sort by: Name (A-Z)</SelectItem>
+                  <SelectItem value="name-desc">Sort by: Name (Z-A)</SelectItem>
+                  <SelectItem value="recent">Sort by: Recently Active</SelectItem>
+                </SelectContent>
+              </Select>
+            </div>
+
+            {filteredUsers.length === 0 ? (
+              <Card>
+                <CardContent className="p-6 text-center">
+                  <div className="flex flex-col items-center justify-center py-8">
+                    <Search className="h-12 w-12 text-muted-foreground mb-4" />
+                    <h3 className="text-lg font-medium">No results found</h3>
+                    <p className="text-muted-foreground mt-2">
+                      Try adjusting your search or filters to find what you're looking for.
+                    </p>
+                  </div>
+                </CardContent>
+              </Card>
+            ) : (
+              <div className="space-y-4">
+                {filteredUsers.map((user) => (
+                  <Card key={user.id} className="overflow-hidden">
+                    <CardContent className="p-6">
+                      <div className="flex flex-col md:flex-row gap-4">
+                        <div className="flex flex-col items-center md:items-start">
+                          <div className="relative">
+                            <Avatar className="h-20 w-20">
+                              <AvatarImage src={user.avatar || "/placeholder.svg"} alt={user.name} />
+                              <AvatarFallback>{user.initials}</AvatarFallback>
+                            </Avatar>
+                            {user.online && (
+                              <span className="absolute bottom-0 right-0 h-4 w-4 rounded-full bg-green-500 border-2 border-white" />
+                            )}
+                          </div>
+                          <div className="mt-2 flex flex-col items-center md:items-start">
+                            <Badge
+                              variant={
+                                user.role === "Student" ? "default" : user.role === "Faculty" ? "secondary" : "outline"
+                              }
+                            >
+                              {user.role}
+                            </Badge>
+                          </div>
+                        </div>
+
+                        <div className="flex-1 space-y-2 text-center md:text-left">
+                          <div>
+                            <h3 className="text-xl font-bold">{user.name}</h3>
+                            <p className="text-sm text-muted-foreground">
+                              @{user.username} • GWID: {user.gwid.substring(0, 4)}****
+                            </p>
+                          </div>
+
+                          <div className="grid grid-cols-1 md:grid-cols-2 gap-2">
+                            <div className="space-y-1">
+                              {user.role === "Student" && (
+                                <>
+                                  <p className="text-sm flex items-center">
+                                    <GraduationCap className="h-4 w-4 mr-2 text-muted-foreground" />
+                                    {user.school}
+                                  </p>
+                                  <p className="text-sm flex items-center">
+                                    <BookOpen className="h-4 w-4 mr-2 text-muted-foreground" />
+                                    {user.major} • {user.year}
+                                  </p>
+                                </>
                               )}
-                              <Button
-                                variant={isFollowing(user.id) ? "destructive" : "default"}
-                                size="sm"
-                                onClick={() => handleToggleFollow(user.id)}
-                                className={!isFollowing(user.id) ? "bg-[#0033A0] hover:bg-[#002180]" : ""}
-                              >
-                                {isFollowing(user.id) ? (
-                                  <>
-                                    <UserMinus className="h-4 w-4 mr-2" />
-                                    Unfollow
-                                  </>
-                                ) : (
-                                  <>
-                                    <UserPlus className="h-4 w-4 mr-2" />
-                                    Follow
-                                  </>
-                                )}
-                              </Button>
+                              {user.role === "Faculty" && (
+                                <>
+                                  <p className="text-sm flex items-center">
+                                    <Briefcase className="h-4 w-4 mr-2 text-muted-foreground" />
+                                    {user.department}
+                                  </p>
+                                  <p className="text-sm flex items-center">
+                                    <BookOpen className="h-4 w-4 mr-2 text-muted-foreground" />
+                                    Teaches: {user.courses?.join(", ")}
+                                  </p>
+                                </>
+                              )}
+                              {user.role === "Alumni" && (
+                                <>
+                                  <p className="text-sm flex items-center">
+                                    <GraduationCap className="h-4 w-4 mr-2 text-muted-foreground" />
+                                    {user.school} • {user.year}
+                                  </p>
+                                  <p className="text-sm flex items-center">
+                                    <Briefcase className="h-4 w-4 mr-2 text-muted-foreground" />
+                                    {user.position} at {user.company}
+                                  </p>
+                                </>
+                              )}
+                            </div>
+                            <div className="space-y-1">
+                              {user.availability && user.availability.length > 0 && (
+                                <p className="text-sm flex items-center">
+                                  <Clock className="h-4 w-4 mr-2 text-muted-foreground" />
+                                  Available: {user.availability.join(", ")}
+                                </p>
+                              )}
+                              {user.interests && (
+                                <div className="flex flex-wrap gap-1 mt-1">
+                                  {user.interests.slice(0, 3).map((interest, i) => (
+                                    <Badge key={i} variant="outline" className="text-xs">
+                                      {interest}
+                                    </Badge>
+                                  ))}
+                                  {user.interests.length > 3 && (
+                                    <Badge variant="outline" className="text-xs">
+                                      +{user.interests.length - 3} more
+                                    </Badge>
+                                  )}
+                                </div>
+                              )}
+                              {user.expertise && (
+                                <div className="flex flex-wrap gap-1 mt-1">
+                                  {user.expertise.slice(0, 3).map((expertise, i) => (
+                                    <Badge key={i} variant="outline" className="text-xs">
+                                      {expertise}
+                                    </Badge>
+                                  ))}
+                                  {user.expertise.length > 3 && (
+                                    <Badge variant="outline" className="text-xs">
+                                      +{user.expertise.length - 3} more
+                                    </Badge>
+                                  )}
+                                </div>
+                              )}
                             </div>
                           </div>
-                        </CardContent>
-                      </Card>
-                    ))}
-                  </div>
-                )}
-              </div>
-            </div>
-
-            {/* Smart Suggestions */}
-            <div className="space-y-4 mt-8">
-              <Separator />
-              <h3 className="text-xl font-bold">Suggested Connections</h3>
-              <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-                {getSuggestedConnections().map((user) => (
-                  <Card key={user.id}>
-                    <CardContent className="p-4">
-                      <div className="flex items-center space-x-4">
-                        <Avatar>
-                          <AvatarImage src={user.avatar || "/placeholder.svg"} alt={user.name} />
-                          <AvatarFallback>{user.initials}</AvatarFallback>
-                        </Avatar>
-                        <div className="flex-1 min-w-0">
-                          <p className="text-sm font-medium truncate">{user.name}</p>
-                          <p className="text-xs text-muted-foreground truncate">
-                            {user.role === "Student"
-                              ? user.major
-                              : user.role === "Faculty"
-                                ? user.department
-                                : user.position}
-                          </p>
                         </div>
-                        <Button
-                          variant={isFollowing(user.id) ? "destructive" : "default"}
-                          size="sm"
-                          onClick={() => handleToggleFollow(user.id)}
-                          className={!isFollowing(user.id) ? "bg-[#0033A0] hover:bg-[#002180]" : ""}
-                        >
-                          {isFollowing(user.id) ? "Unfollow" : "Follow"}
-                        </Button>
+
+                        <div className="flex flex-row md:flex-col justify-center gap-2">
+                          <Button variant="outline" size="sm" asChild>
+                            <Link href={`/student/profile/${user.id}`}>
+                              <User className="h-4 w-4 mr-2" />
+                              Profile
+                            </Link>
+                          </Button>
+                          <Button variant="outline" size="sm" asChild>
+                            <Link href={`/student/messages?user=${user.id}`}>
+                              <MessageSquare className="h-4 w-4 mr-2" />
+                              Message
+                            </Link>
+                          </Button>
+                          {user.availability && user.availability.length > 0 && (
+                            <Button variant="outline" size="sm" onClick={() => handleBookAppointment(user)}>
+                              <Calendar className="h-4 w-4 mr-2" />
+                              Book
+                            </Button>
+                          )}
+                          <Button
+                            variant={isFollowing(user.id) ? "destructive" : "default"}
+                            size="sm"
+                            onClick={() => handleToggleFollow(user.id)}
+                            className={!isFollowing(user.id) ? "bg-[#0033A0] hover:bg-[#002180]" : ""}
+                          >
+                            {isFollowing(user.id) ? (
+                              <>
+                                <UserMinus className="h-4 w-4 mr-2" />
+                                Unfollow
+                              </>
+                            ) : (
+                              <>
+                                <UserPlus className="h-4 w-4 mr-2" />
+                                Follow
+                              </>
+                            )}
+                          </Button>
+                        </div>
                       </div>
                     </CardContent>
                   </Card>
                 ))}
               </div>
-
-              <h3 className="text-xl font-bold">Newly Joined</h3>
-              <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-                {getNewlyJoinedUsers().map((user) => (
-                  <Card key={user.id}>
-                    <CardContent className="p-4">
-                      <div className="flex items-center space-x-4">
-                        <Avatar>
-                          <AvatarImage src={user.avatar || "/placeholder.svg"} alt={user.name} />
-                          <AvatarFallback>{user.initials}</AvatarFallback>
-                        </Avatar>
-                        <div className="flex-1 min-w-0">
-                          <p className="text-sm font-medium truncate">{user.name}</p>
-                          <p className="text-xs text-muted-foreground truncate">
-                            {user.role === "Student"
-                              ? user.major
-                              : user.role === "Faculty"
-                                ? user.department
-                                : user.position}
-                          </p>
-                        </div>
-                        <Button
-                          variant={isFollowing(user.id) ? "destructive" : "default"}
-                          size="sm"
-                          onClick={() => handleToggleFollow(user.id)}
-                          className={!isFollowing(user.id) ? "bg-[#0033A0] hover:bg-[#002180]" : ""}
-                        >
-                          {isFollowing(user.id) ? "Unfollow" : "Follow"}
-                        </Button>
-                      </div>
-                    </CardContent>
-                  </Card>
-                ))}
-              </div>
-            </div>
+            )}
           </div>
-        </main>
+        </div>
+
+        {/* Smart Suggestions */}
+        <div className="space-y-4 mt-8">
+          <Separator />
+          <h3 className="text-xl font-bold">Suggested Connections</h3>
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+            {getSuggestedConnections().map((user) => (
+              <Card key={user.id}>
+                <CardContent className="p-4">
+                  <div className="flex items-center space-x-4">
+                    <Avatar>
+                      <AvatarImage src={user.avatar || "/placeholder.svg"} alt={user.name} />
+                      <AvatarFallback>{user.initials}</AvatarFallback>
+                    </Avatar>
+                    <div className="flex-1 min-w-0">
+                      <p className="text-sm font-medium truncate">{user.name}</p>
+                      <p className="text-xs text-muted-foreground truncate">
+                        {user.role === "Student"
+                          ? user.major
+                          : user.role === "Faculty"
+                            ? user.department
+                            : user.position}
+                      </p>
+                    </div>
+                    <Button
+                      variant={isFollowing(user.id) ? "destructive" : "default"}
+                      size="sm"
+                      onClick={() => handleToggleFollow(user.id)}
+                      className={!isFollowing(user.id) ? "bg-[#0033A0] hover:bg-[#002180]" : ""}
+                    >
+                      {isFollowing(user.id) ? "Unfollow" : "Follow"}
+                    </Button>
+                  </div>
+                </CardContent>
+              </Card>
+            ))}
+          </div>
+
+          <h3 className="text-xl font-bold">Newly Joined</h3>
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+            {getNewlyJoinedUsers().map((user) => (
+              <Card key={user.id}>
+                <CardContent className="p-4">
+                  <div className="flex items-center space-x-4">
+                    <Avatar>
+                      <AvatarImage src={user.avatar || "/placeholder.svg"} alt={user.name} />
+                      <AvatarFallback>{user.initials}</AvatarFallback>
+                    </Avatar>
+                    <div className="flex-1 min-w-0">
+                      <p className="text-sm font-medium truncate">{user.name}</p>
+                      <p className="text-xs text-muted-foreground truncate">
+                        {user.role === "Student"
+                          ? user.major
+                          : user.role === "Faculty"
+                            ? user.department
+                            : user.position}
+                      </p>
+                    </div>
+                    <Button
+                      variant={isFollowing(user.id) ? "destructive" : "default"}
+                      size="sm"
+                      onClick={() => handleToggleFollow(user.id)}
+                      className={!isFollowing(user.id) ? "bg-[#0033A0] hover:bg-[#002180]" : ""}
+                    >
+                      {isFollowing(user.id) ? "Unfollow" : "Follow"}
+                    </Button>
+                  </div>
+                </CardContent>
+              </Card>
+            ))}
+          </div>
+        </div>
       </div>
-      <Footer />
 
       <AppointmentBookingDialog person={selectedPerson} open={bookingDialogOpen} onOpenChange={setBookingDialogOpen} />
-    </div>
+    </PageLayout>
   )
 }
