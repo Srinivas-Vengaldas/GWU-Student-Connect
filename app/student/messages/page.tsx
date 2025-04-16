@@ -3,7 +3,7 @@
 import { useState, useCallback } from "react"
 import { MessageSidebar } from "@/components/messages/message-sidebar"
 import { MessagePanel } from "@/components/messages/message-panel"
-import { MessageComposer } from "@/components/messages/message-composer"
+import { MessageComposer, type MessageAttachment } from "@/components/messages/message-composer"
 import { MessageHeader } from "@/components/messages/message-header"
 import { EmptyState } from "@/components/messages/empty-state"
 import { PageLayout } from "@/components/page-layout"
@@ -13,7 +13,9 @@ export default function MessagesPage() {
   const [selectedConversation, setSelectedConversation] = useState<string | null>(null)
   const [showSidebar, setShowSidebar] = useState(true)
   const isMobile = useMediaQuery("(max-width: 768px)")
-  const [addMessageToConversation, setAddMessageToConversation] = useState<((content: string) => void) | null>(null)
+  const [addMessageToConversation, setAddMessageToConversation] = useState<
+    ((content: string, attachments?: MessageAttachment[]) => void) | null
+  >(null)
 
   // On mobile, when a conversation is selected, hide the sidebar
   const handleConversationSelect = (id: string) => {
@@ -32,14 +34,14 @@ export default function MessagesPage() {
   }
 
   // Function to handle sending a new message
-  const handleSendMessage = (message: string) => {
+  const handleSendMessage = (message: string, attachments?: MessageAttachment[]) => {
     if (selectedConversation && addMessageToConversation) {
-      addMessageToConversation(message)
+      addMessageToConversation(message, attachments)
     }
   }
 
   // Callback to receive the addMessage function from MessagePanel
-  const handleMessagesInit = useCallback((addMessage: (content: string) => void) => {
+  const handleMessagesInit = useCallback((addMessage: (content: string, attachments?: MessageAttachment[]) => void) => {
     setAddMessageToConversation(() => addMessage)
   }, [])
 
