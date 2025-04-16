@@ -1,39 +1,29 @@
-import { MainNav } from "@/components/main-nav"
-import { Footer } from "@/components/footer"
-import { DashboardHeader } from "@/components/dashboard-header"
-import { DashboardNav } from "@/components/dashboard-nav"
+"use client"
 import { EventsHeader } from "@/components/events/events-header"
 import { EventsList } from "@/components/events/events-list"
 import { EventsCalendar } from "@/components/events/events-calendar"
 import { EventsFilter } from "@/components/events/events-filter"
 import { FeaturedEvents } from "@/components/events/featured-events"
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
+import { EventsProvider } from "@/contexts/events-context"
+import { PageLayout } from "@/components/page-layout"
 
 export default function EventsPage() {
   return (
-    <div className="flex min-h-screen flex-col">
-      <header className="sticky top-0 z-50 w-full border-b bg-white">
-        <div className="container flex h-16 items-center">
-          <MainNav />
-          <DashboardHeader role="student" />
-        </div>
-      </header>
-      <div className="container flex-1 items-start md:grid md:grid-cols-[220px_1fr] md:gap-6 lg:grid-cols-[240px_1fr] lg:gap-10 py-8">
-        <aside className="fixed top-14 z-30 -ml-2 hidden h-[calc(100vh-3.5rem)] w-full shrink-0 md:sticky md:block">
-          <DashboardNav role="student" />
-        </aside>
-        <main className="flex w-full flex-col overflow-hidden">
-          <div className="flex-1 space-y-6">
-            <EventsHeader />
+    <EventsProvider>
+      <PageLayout role="student">
+        <div className="flex-1 space-y-6">
+          <EventsHeader />
 
-            <FeaturedEvents />
+          <FeaturedEvents />
 
-            <div className="grid grid-cols-1 md:grid-cols-4 gap-6">
-              <div className="md:col-span-1">
+          <div className="grid grid-cols-1 gap-6">
+            <div className="flex flex-col md:flex-row gap-6">
+              <div className="w-full md:w-64 shrink-0">
                 <EventsFilter />
               </div>
 
-              <div className="md:col-span-3">
+              <div className="flex-1">
                 <Tabs defaultValue="list" className="w-full">
                   <div className="flex items-center justify-between mb-4">
                     <TabsList>
@@ -53,9 +43,8 @@ export default function EventsPage() {
               </div>
             </div>
           </div>
-        </main>
-      </div>
-      <Footer />
-    </div>
+        </div>
+      </PageLayout>
+    </EventsProvider>
   )
 }

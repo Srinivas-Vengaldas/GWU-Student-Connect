@@ -1,50 +1,34 @@
 "use client"
 
 import { useState } from "react"
-import { useRouter } from "next/navigation"
 import { Button } from "@/components/ui/button"
 import { Card, CardContent } from "@/components/ui/card"
 import { Calendar, Clock, Users } from "lucide-react"
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
-import { toast } from "@/hooks/use-toast"
+import { useEvents } from "@/contexts/events-context"
+import type { EventStatus } from "@/contexts/events-context"
 
 interface EventRSVPProps {
   event: any
 }
 
 export function EventRSVP({ event }: EventRSVPProps) {
-  const [rsvpStatus, setRsvpStatus] = useState<string | null>(null)
+  const [rsvpStatus, setRsvpStatus] = useState<EventStatus | null>(null)
   const [isSubmitting, setIsSubmitting] = useState(false)
-  const router = useRouter()
+  const { rsvpToEvent } = useEvents()
 
   const handleRSVP = async () => {
     if (!rsvpStatus) {
-      toast({
-        title: "Please select an RSVP option",
-        variant: "destructive",
-      })
+      alert("Please select an RSVP option")
       return
     }
 
     setIsSubmitting(true)
 
     try {
-      // In a real app, this would be an API call
-      await new Promise((resolve) => setTimeout(resolve, 1000))
-
-      toast({
-        title: "RSVP successful!",
-        description: `You've ${rsvpStatus} this event.`,
-      })
-
-      // Redirect to My Events page
-      router.push("/student/events/my-events")
+      rsvpToEvent(event.id, rsvpStatus)
     } catch (error) {
-      toast({
-        title: "Something went wrong",
-        description: "Please try again later.",
-        variant: "destructive",
-      })
+      alert("Something went wrong. Please try again later.")
     } finally {
       setIsSubmitting(false)
     }
@@ -70,7 +54,7 @@ export function EventRSVP({ event }: EventRSVPProps) {
           </div>
 
           <div className="pt-2">
-            <Select onValueChange={setRsvpStatus}>
+            <Select onValueChange={(value) => setRsvpStatus(value as EventStatus)}>
               <SelectTrigger>
                 <SelectValue placeholder="Select your RSVP" />
               </SelectTrigger>

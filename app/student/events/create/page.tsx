@@ -1,197 +1,209 @@
-import { MainNav } from "@/components/main-nav"
-import { Footer } from "@/components/footer"
-import { DashboardHeader } from "@/components/dashboard-header"
-import { DashboardNav } from "@/components/dashboard-nav"
+"use client"
+
+import type React from "react"
+
+import { useState } from "react"
+import { useRouter } from "next/navigation"
 import { Button } from "@/components/ui/button"
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
 import { Textarea } from "@/components/ui/textarea"
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
-import { Switch } from "@/components/ui/switch"
-import { Separator } from "@/components/ui/separator"
 import { ArrowLeft, Calendar, Clock, MapPin, Upload } from "lucide-react"
 import Link from "next/link"
+import { useEvents } from "@/contexts/events-context"
+import { PageLayout } from "@/components/page-layout"
 
 export default function CreateEventPage() {
+  const router = useRouter()
+  const { addEvent } = useEvents()
+
+  const [formData, setFormData] = useState({
+    title: "",
+    date: "",
+    time: "",
+    location: "",
+    category: "",
+    description: "",
+    image: "",
+  })
+
+  const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
+    const { name, value } = e.target
+    setFormData((prev) => ({ ...prev, [name]: value }))
+  }
+
+  const handleSelectChange = (name: string, value: string) => {
+    setFormData((prev) => ({ ...prev, [name]: value }))
+  }
+
+  const handleSubmit = (e: React.FormEvent) => {
+    e.preventDefault()
+
+    // Add the new event
+    addEvent({
+      ...formData,
+      date: formData.date, // In a real app, you'd format this properly
+    })
+
+    // Show success message
+    alert("Event created successfully!")
+
+    // Redirect to events page
+    router.push("/student/events")
+  }
+
+  const categories = ["Academic", "Career", "Clubs", "Networking", "Social", "Sports", "Workshop", "Other"]
+
   return (
-    <div className="flex min-h-screen flex-col">
-      <header className="sticky top-0 z-50 w-full border-b bg-white">
-        <div className="container flex h-16 items-center">
-          <MainNav />
-          <DashboardHeader role="student" />
+    <PageLayout role="student">
+      <div className="flex-1 space-y-6">
+        {/* Back Button */}
+        <div>
+          <Button asChild variant="ghost" size="sm" className="gap-1">
+            <Link href="/student/events">
+              <ArrowLeft className="h-4 w-4" />
+              <span>Back to Events</span>
+            </Link>
+          </Button>
         </div>
-      </header>
-      <div className="container flex-1 items-start md:grid md:grid-cols-[220px_1fr] md:gap-6 lg:grid-cols-[240px_1fr] lg:gap-10 py-8">
-        <aside className="fixed top-14 z-30 -ml-2 hidden h-[calc(100vh-3.5rem)] w-full shrink-0 md:sticky md:block">
-          <DashboardNav role="student" />
-        </aside>
-        <main className="flex w-full flex-col overflow-hidden">
-          <div className="flex-1 space-y-6">
-            {/* Back Button */}
-            <div>
-              <Button asChild variant="ghost" size="sm" className="gap-1">
-                <Link href="/student/events">
-                  <ArrowLeft className="h-4 w-4" />
-                  <span>Back to Events</span>
-                </Link>
-              </Button>
-            </div>
 
-            <div>
-              <h1 className="text-2xl font-bold tracking-tight">Create New Event</h1>
-              <p className="text-muted-foreground">Fill out the form below to create a new event</p>
-            </div>
+        <div>
+          <h1 className="text-2xl font-bold tracking-tight">Create Event</h1>
+          <p className="text-muted-foreground">Create a new event for the GW community</p>
+        </div>
 
-            <Card>
-              <CardHeader>
-                <CardTitle>Event Details</CardTitle>
-                <CardDescription>Provide the basic information about your event</CardDescription>
-              </CardHeader>
-              <CardContent className="space-y-6">
-                <div className="space-y-2">
+        <Card>
+          <CardHeader>
+            <CardTitle>Event Details</CardTitle>
+            <CardDescription>
+              Fill out the form below to create your event. All fields are required unless marked as optional.
+            </CardDescription>
+          </CardHeader>
+          <CardContent>
+            <form onSubmit={handleSubmit} className="space-y-6">
+              <div className="space-y-4">
+                <div>
                   <Label htmlFor="title">Event Title</Label>
-                  <Input id="title" placeholder="Enter event title" />
+                  <Input
+                    id="title"
+                    name="title"
+                    placeholder="Enter event title"
+                    value={formData.title}
+                    onChange={handleChange}
+                    required
+                  />
                 </div>
 
-                <div className="space-y-2">
-                  <Label htmlFor="description">Event Description</Label>
-                  <Textarea id="description" placeholder="Describe your event" className="min-h-[150px]" />
-                </div>
-
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                  <div className="space-y-2">
-                    <Label htmlFor="category">Category</Label>
-                    <Select>
-                      <SelectTrigger id="category">
-                        <SelectValue placeholder="Select category" />
-                      </SelectTrigger>
-                      <SelectContent>
-                        <SelectItem value="academic">Academic</SelectItem>
-                        <SelectItem value="career">Career</SelectItem>
-                        <SelectItem value="social">Social</SelectItem>
-                        <SelectItem value="clubs">Clubs & Organizations</SelectItem>
-                        <SelectItem value="workshops">Workshops & Training</SelectItem>
-                        <SelectItem value="sports">Sports & Recreation</SelectItem>
-                      </SelectContent>
-                    </Select>
-                  </div>
-
-                  <div className="space-y-2">
-                    <Label htmlFor="format">Event Format</Label>
-                    <Select>
-                      <SelectTrigger id="format">
-                        <SelectValue placeholder="Select format" />
-                      </SelectTrigger>
-                      <SelectContent>
-                        <SelectItem value="in-person">In-Person</SelectItem>
-                        <SelectItem value="virtual">Virtual</SelectItem>
-                        <SelectItem value="hybrid">Hybrid</SelectItem>
-                      </SelectContent>
-                    </Select>
-                  </div>
-                </div>
-
-                <Separator />
-
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                  <div className="space-y-2">
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                  <div>
                     <Label htmlFor="date">Date</Label>
                     <div className="relative">
-                      <Calendar className="absolute left-3 top-3 h-4 w-4 text-gray-500" />
-                      <Input id="date" type="date" className="pl-10" />
+                      <Input
+                        id="date"
+                        name="date"
+                        type="text"
+                        placeholder="May 15, 2024"
+                        value={formData.date}
+                        onChange={handleChange}
+                        required
+                      />
+                      <Calendar className="absolute right-3 top-2.5 h-4 w-4 text-gray-500" />
                     </div>
                   </div>
-
-                  <div className="space-y-2">
+                  <div>
                     <Label htmlFor="time">Time</Label>
-                    <div className="grid grid-cols-2 gap-2">
-                      <div className="relative">
-                        <Clock className="absolute left-3 top-3 h-4 w-4 text-gray-500" />
-                        <Input id="time-start" type="time" className="pl-10" />
-                      </div>
-                      <div className="relative">
-                        <Clock className="absolute left-3 top-3 h-4 w-4 text-gray-500" />
-                        <Input id="time-end" type="time" className="pl-10" />
-                      </div>
+                    <div className="relative">
+                      <Input
+                        id="time"
+                        name="time"
+                        type="text"
+                        placeholder="10:00 AM - 4:00 PM"
+                        value={formData.time}
+                        onChange={handleChange}
+                        required
+                      />
+                      <Clock className="absolute right-3 top-2.5 h-4 w-4 text-gray-500" />
                     </div>
                   </div>
                 </div>
 
-                <div className="space-y-2">
+                <div>
                   <Label htmlFor="location">Location</Label>
                   <div className="relative">
-                    <MapPin className="absolute left-3 top-3 h-4 w-4 text-gray-500" />
-                    <Input id="location" placeholder="Enter location" className="pl-10" />
+                    <Input
+                      id="location"
+                      name="location"
+                      placeholder="Enter event location"
+                      value={formData.location}
+                      onChange={handleChange}
+                      required
+                    />
+                    <MapPin className="absolute right-3 top-2.5 h-4 w-4 text-gray-500" />
                   </div>
                 </div>
 
-                <Separator />
+                <div>
+                  <Label htmlFor="category">Category</Label>
+                  <Select
+                    value={formData.category}
+                    onValueChange={(value) => handleSelectChange("category", value)}
+                    required
+                  >
+                    <SelectTrigger>
+                      <SelectValue placeholder="Select a category" />
+                    </SelectTrigger>
+                    <SelectContent>
+                      {categories.map((category) => (
+                        <SelectItem key={category} value={category}>
+                          {category}
+                        </SelectItem>
+                      ))}
+                    </SelectContent>
+                  </Select>
+                </div>
 
-                <div className="space-y-2">
-                  <Label htmlFor="image">Event Image</Label>
-                  <div className="border-2 border-dashed rounded-md p-6 flex flex-col items-center justify-center">
-                    <Upload className="h-8 w-8 text-gray-400 mb-2" />
-                    <p className="text-sm text-gray-500">Drag and drop an image, or click to browse</p>
-                    <p className="text-xs text-gray-400 mt-1">Recommended size: 1200 x 600 pixels</p>
-                    <Input id="image" type="file" className="hidden" />
-                    <Button variant="outline" size="sm" className="mt-4">
-                      Upload Image
+                <div>
+                  <Label htmlFor="description">Description</Label>
+                  <Textarea
+                    id="description"
+                    name="description"
+                    placeholder="Enter event description"
+                    value={formData.description}
+                    onChange={handleChange}
+                    rows={5}
+                    required
+                  />
+                </div>
+
+                <div>
+                  <Label htmlFor="image">Event Image (Optional)</Label>
+                  <div className="mt-1 flex items-center gap-4">
+                    <Button type="button" variant="outline" className="gap-2">
+                      <Upload className="h-4 w-4" />
+                      <span>Upload Image</span>
                     </Button>
+                    <span className="text-sm text-gray-500">No file selected</span>
                   </div>
+                  <p className="mt-1 text-xs text-gray-500">
+                    Recommended image size: 1200x600 pixels. Max file size: 5MB.
+                  </p>
                 </div>
+              </div>
 
-                <Separator />
-
-                <div className="space-y-4">
-                  <h3 className="font-medium">Event Settings</h3>
-
-                  <div className="flex items-center justify-between">
-                    <div className="space-y-0.5">
-                      <Label htmlFor="rsvp">Require RSVP</Label>
-                      <p className="text-sm text-gray-500">Attendees must RSVP to attend this event</p>
-                    </div>
-                    <Switch id="rsvp" />
-                  </div>
-
-                  <div className="flex items-center justify-between">
-                    <div className="space-y-0.5">
-                      <Label htmlFor="capacity">Limit Capacity</Label>
-                      <p className="text-sm text-gray-500">Set a maximum number of attendees</p>
-                    </div>
-                    <Switch id="capacity" />
-                  </div>
-
-                  <div className="flex items-center justify-between">
-                    <div className="space-y-0.5">
-                      <Label htmlFor="featured">Request Featured Status</Label>
-                      <p className="text-sm text-gray-500">Request to have this event featured on the events page</p>
-                    </div>
-                    <Switch id="featured" />
-                  </div>
-
-                  <div className="flex items-center justify-between">
-                    <div className="space-y-0.5">
-                      <Label htmlFor="calendar">Add to GW Calendar</Label>
-                      <p className="text-sm text-gray-500">Submit this event to the official GW Calendar</p>
-                    </div>
-                    <Switch id="calendar" />
-                  </div>
-                </div>
-              </CardContent>
-            </Card>
-
-            <div className="flex justify-end gap-4">
-              <Button variant="outline" asChild>
-                <Link href="/student/events">Cancel</Link>
-              </Button>
-              <Button variant="outline">Save as Draft</Button>
-              <Button className="bg-[#0033A0] hover:bg-[#002180]">Create Event</Button>
-            </div>
-          </div>
-        </main>
+              <div className="flex justify-end gap-4">
+                <Button type="button" variant="outline" asChild>
+                  <Link href="/student/events">Cancel</Link>
+                </Button>
+                <Button type="submit" className="bg-[#0033A0] hover:bg-[#002180]">
+                  Create Event
+                </Button>
+              </div>
+            </form>
+          </CardContent>
+        </Card>
       </div>
-      <Footer />
-    </div>
+    </PageLayout>
   )
 }

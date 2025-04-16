@@ -1,4 +1,5 @@
 import { AppHeader } from "@/components/app-header"
+import { Footer } from "@/components/footer"
 import type { ReactNode } from "react"
 
 interface PageLayoutProps {
@@ -11,9 +12,10 @@ export function PageLayout({ role, children, showSchedule = false }: PageLayoutP
   return (
     <div className="flex min-h-screen flex-col">
       <AppHeader role={role} showNavInHeader={true} />
-      <div className="container grid flex-1 gap-6 py-4">
+      <div className="container flex-1 py-6">
         <main className="flex w-full flex-1 flex-col overflow-hidden">{children}</main>
       </div>
+      <Footer />
     </div>
   )
 }
