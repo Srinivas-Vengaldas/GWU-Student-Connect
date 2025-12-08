@@ -24,7 +24,7 @@ const featuredBlog = {
     major: "Psychology",
     year: "Junior",
   },
-  date: "May 10, 2024",
+  date: "December 10, 2025",
   readTime: "5 min read",
   tags: ["Study Tips", "Productivity"],
   likes: 42,

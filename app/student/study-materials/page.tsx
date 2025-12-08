@@ -26,7 +26,7 @@ export default function StudyMaterialsPage() {
       description:
         "Comprehensive review of all topics covered in Calculus I, including limits, derivatives, and integrals.",
       fileType: "pdf",
-      uploadDate: "May 10, 2024",
+      uploadDate: "December 10, 2025",
       downloads: 156,
       views: 342,
       uploader: {
@@ -44,7 +44,7 @@ export default function StudyMaterialsPage() {
       title: "Introduction to Psychology Lecture Notes",
       description: "Detailed notes from the Introduction to Psychology course covering key concepts and theories.",
       fileType: "docx",
-      uploadDate: "May 8, 2024",
+      uploadDate: "December 8, 2025",
       downloads: 98,
       views: 210,
       uploader: {
@@ -62,7 +62,7 @@ export default function StudyMaterialsPage() {
       title: "Organic Chemistry Lab Report Template",
       description: "Template for writing lab reports for Organic Chemistry experiments with proper formatting.",
       fileType: "docx",
-      uploadDate: "May 5, 2024",
+      uploadDate: "December 5, 2025",
       downloads: 124,
       views: 189,
       uploader: {
@@ -80,7 +80,7 @@ export default function StudyMaterialsPage() {
       title: "American History Timeline Presentation",
       description: "Visual timeline of key events in American history from 1776 to present day.",
       fileType: "pptx",
-      uploadDate: "May 3, 2024",
+      uploadDate: "December 3, 2025",
       downloads: 87,
       views: 156,
       uploader: {
@@ -98,7 +98,7 @@ export default function StudyMaterialsPage() {
       title: "Computer Science Data Structures Cheat Sheet",
       description: "Quick reference guide for common data structures used in computer science algorithms.",
       fileType: "pdf",
-      uploadDate: "May 1, 2024",
+      uploadDate: "December 1, 2025",
       downloads: 215,
       views: 378,
       uploader: {
@@ -116,7 +116,7 @@ export default function StudyMaterialsPage() {
       title: "Spanish Verb Conjugation Tables",
       description: "Comprehensive tables of Spanish verb conjugations for different tenses and moods.",
       fileType: "pdf",
-      uploadDate: "April 28, 2024",
+      uploadDate: "December 28, 2025",
       downloads: 143,
       views: 267,
       uploader: {
@@ -134,7 +134,7 @@ export default function StudyMaterialsPage() {
       title: "Physics Formulas and Constants",
       description: "Collection of essential physics formulas and constants for quick reference during problem-solving.",
       fileType: "pdf",
-      uploadDate: "April 25, 2024",
+      uploadDate: "December 25, 2025",
       downloads: 198,
       views: 312,
       uploader: {
@@ -152,7 +152,7 @@ export default function StudyMaterialsPage() {
       title: "Business Ethics Case Studies",
       description: "Collection of real-world business ethics case studies with discussion questions.",
       fileType: "docx",
-      uploadDate: "April 22, 2024",
+      uploadDate: "December 22, 2025",
       downloads: 76,
       views: 145,
       uploader: {

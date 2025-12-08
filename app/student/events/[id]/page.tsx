@@ -40,14 +40,13 @@ function EventDetailPage({ params }: { params: { id: string } }) {
         setEvent({
           id: params.id,
           title: "Career Fair: Tech & Engineering",
-          date: "May 15, 2024",
+          date: "December 15, 2025",
           time: "10:00 AM - 4:00 PM",
           location: "Marvin Center Grand Ballroom",
           locationUrl: "https://maps.google.com/?q=Marvin+Center+Grand+Ballroom+GWU",
           description:
             "Join us for the annual Tech & Engineering Career Fair! Connect with over 50 employers from various industries looking to hire GW students and alumni for internships and full-time positions. Bring multiple copies of your resume and dress professionally.",
-          image:
-            "https://hebbkx1anhila5yf.public.blob.vercel-storage.com/Unknown.jpg-x8a2IU7yfeqkRpRgsQEP2jVxG5QvYv.png",
+          image: "/images/unknown.png",
           category: "Career",
           format: "In-Person",
           attendees: 245,
@@ -171,7 +170,12 @@ function EventDetailPage({ params }: { params: { id: string } }) {
                       <h2 className="text-xl font-semibold mb-4">Event Resources</h2>
                       <div className="space-y-2">
                         {event.resources.map((resource: any, index: number) => (
-                          <Button key={index} variant="outline" className="w-full justify-start gap-2" asChild>
+                          <Button
+                            key={index}
+                            variant="outline"
+                            className="w-full justify-start gap-2 bg-transparent"
+                            asChild
+                          >
                             <Link href={resource.url}>
                               <Download className="h-4 w-4" />
                               <span>{resource.name}</span>

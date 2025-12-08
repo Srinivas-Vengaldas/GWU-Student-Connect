@@ -104,7 +104,7 @@ export default function CreateEventPage() {
                         id="date"
                         name="date"
                         type="text"
-                        placeholder="May 15, 2024"
+                        placeholder="December 15, 2025"
                         value={formData.date}
                         onChange={handleChange}
                         required
@@ -180,7 +180,7 @@ export default function CreateEventPage() {
                 <div>
                   <Label htmlFor="image">Event Image (Optional)</Label>
                   <div className="mt-1 flex items-center gap-4">
-                    <Button type="button" variant="outline" className="gap-2">
+                    <Button type="button" variant="outline" className="gap-2 bg-transparent">
                       <Upload className="h-4 w-4" />
                       <span>Upload Image</span>
                     </Button>

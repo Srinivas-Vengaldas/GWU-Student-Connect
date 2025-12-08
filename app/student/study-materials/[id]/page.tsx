@@ -46,7 +46,7 @@ export default function StudyMaterialPage({ params }: { params: { id: string } }
     subject: "Mathematics",
     fileType: "pdf",
     fileSize: "2.4 MB",
-    uploadDate: "May 10, 2024",
+    uploadDate: "December 10, 2025",
     downloads: 156,
     views: 342,
     rating: 4.8,
@@ -67,18 +67,18 @@ export default function StudyMaterialPage({ params }: { params: { id: string } }
     versions: [
       {
         version: "3",
-        date: "May 10, 2024",
+        date: "December 10, 2025",
         notes: "Added more practice problems and solutions",
         isCurrent: true,
       },
       {
         version: "2",
-        date: "May 5, 2024",
+        date: "December 5, 2025",
         notes: "Updated formulas and fixed typos",
       },
       {
         version: "1",
-        date: "May 1, 2024",
+        date: "December 1, 2025",
         notes: "Initial version",
       },
     ],
@@ -387,7 +387,7 @@ export default function StudyMaterialPage({ params }: { params: { id: string } }
               <CardContent className="p-4">
                 <h3 className="font-medium mb-3">Actions</h3>
                 <div className="space-y-2">
-                  <Button variant="outline" className="w-full justify-start">
+                  <Button variant="outline" className="w-full justify-start bg-transparent">
                     <Flag className="h-4 w-4 mr-2" />
                     Report this material
                   </Button>

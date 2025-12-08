@@ -76,7 +76,7 @@ Remember that a strong research proposal demonstrates not just what you want to 
 
 Feel free to schedule office hours if you'd like feedback on your specific proposal!
     `,
-    date: "2024-05-10T14:30:00Z",
+    date: "2025-12-10T14:30:00Z",
     readTime: "8 min read",
     tags: ["Research Methods", "Academic Writing", "SOCI 301"],
     likes: 24,
@@ -122,7 +122,7 @@ Feel free to schedule office hours if you'd like feedback on your specific propo
                     Edit
                   </Button>
                 </Link>
-                <Button variant="outline" size="sm" className="text-red-500 hover:text-red-600">
+                <Button variant="outline" size="sm" className="text-red-500 hover:text-red-600 bg-transparent">
                   <Trash2 className="h-4 w-4 mr-2" />
                   Delete
                 </Button>

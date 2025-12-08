@@ -66,7 +66,7 @@ export default function FacultyAvailabilityPage() {
                     </div>
                     <div className="space-y-4">
                       <div>
-                        <h3 className="text-lg font-medium">May 15, 2023</h3>
+                        <h3 className="text-lg font-medium">December 15, 2025</h3>
                         <p className="text-sm text-muted-foreground">Monday</p>
                       </div>
 
@@ -101,7 +101,7 @@ export default function FacultyAvailabilityPage() {
                               <span className="sr-only">Remove</span>
                             </Button>
                           </div>
-                          <Button variant="outline" className="flex items-center">
+                          <Button variant="outline" className="flex items-center bg-transparent">
                             <Plus className="mr-2 h-4 w-4" />
                             Add Time Slot
                           </Button>
@@ -190,7 +190,7 @@ export default function FacultyAvailabilityPage() {
                             <span className="sr-only">Remove</span>
                           </Button>
                         </div>
-                        <Button variant="outline" size="sm" className="flex items-center">
+                        <Button variant="outline" size="sm" className="flex items-center bg-transparent">
                           <Plus className="mr-2 h-4 w-4" />
                           Add Time Slot
                         </Button>
@@ -230,14 +230,14 @@ export default function FacultyAvailabilityPage() {
                             <span className="sr-only">Remove</span>
                           </Button>
                         </div>
-                        <Button variant="outline" size="sm" className="flex items-center">
+                        <Button variant="outline" size="sm" className="flex items-center bg-transparent">
                           <Plus className="mr-2 h-4 w-4" />
                           Add Time Slot
                         </Button>
                       </div>
                     </div>
 
-                    <Button variant="outline" className="w-full">
+                    <Button variant="outline" className="w-full bg-transparent">
                       <Plus className="mr-2 h-4 w-4" />
                       Add Another Day
                     </Button>

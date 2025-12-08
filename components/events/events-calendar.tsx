@@ -59,13 +59,12 @@ export function EventsCalendar() {
     return days
   }
 
-  // Sample events data
   const events = [
-    { date: new Date(2024, 4, 15), count: 2 }, // May 15
-    { date: new Date(2024, 4, 18), count: 1 }, // May 18
-    { date: new Date(2024, 4, 20), count: 1 }, // May 20
-    { date: new Date(2024, 4, 25), count: 1 }, // May 25
-    { date: new Date(2024, 5, 5), count: 1 }, // June 5
+    { date: new Date(2025, 11, 15), count: 2 }, // December 15, 2025
+    { date: new Date(2025, 11, 18), count: 1 }, // December 18, 2025
+    { date: new Date(2025, 11, 20), count: 1 }, // December 20, 2025
+    { date: new Date(2025, 11, 25), count: 1 }, // December 25, 2025
+    { date: new Date(2026, 0, 5), count: 1 }, // January 5, 2026
   ]
 
   // Check if a day has events

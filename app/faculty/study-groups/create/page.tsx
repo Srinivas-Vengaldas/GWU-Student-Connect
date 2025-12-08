@@ -3,7 +3,7 @@
 import type React from "react"
 
 import { useState } from "react"
-import Link from "next/link"
+import { useRouter } from "next/navigation"
 import { MainNav } from "@/components/main-nav"
 import { Footer } from "@/components/footer"
 import { DashboardHeader } from "@/components/dashboard-header"
@@ -16,8 +16,12 @@ import { Textarea } from "@/components/ui/textarea"
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group"
 import { Checkbox } from "@/components/ui/checkbox"
 import { ArrowLeft, BookOpen, Globe, Lock, Upload } from "lucide-react"
+import { toast } from "@/hooks/use-toast"
+import Link from "next/link"
 
 export default function CreateStudyGroupPage() {
+  const router = useRouter()
+  const [isSubmitting, setIsSubmitting] = useState(false)
   const [groupName, setGroupName] = useState("")
   const [groupDescription, setGroupDescription] = useState("")
   const [course, setCourse] = useState("")
@@ -29,25 +33,104 @@ export default function CreateStudyGroupPage() {
   const [allowStudentEvents, setAllowStudentEvents] = useState(false)
   const [notifyDashboard, setNotifyDashboard] = useState(true)
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
-    // In a real app, you'd call an API to create the group
-    console.log("Creating group:", {
-      name: groupName,
-      description: groupDescription,
-      course,
-      subject,
-      tags: tags.split(",").map((tag) => tag.trim()),
-      visibility,
-      permissions: {
-        allowStudentPosts,
-        allowStudentUploads,
-        allowStudentEvents,
-        notifyDashboard,
-      },
-    })
-    // Redirect to the new group page
-    window.location.href = "/faculty/study-groups"
+    setIsSubmitting(true)
+
+    try {
+      // Validate form
+      if (!groupName.trim()) {
+        toast({
+          title: "Missing Information",
+          description: "Please provide a name for your study group.",
+          variant: "destructive",
+        })
+        setIsSubmitting(false)
+        return
+      }
+
+      if (!course.trim()) {
+        toast({
+          title: "Missing Information",
+          description: "Please provide a course for your study group.",
+          variant: "destructive",
+        })
+        setIsSubmitting(false)
+        return
+      }
+
+      if (!subject.trim()) {
+        toast({
+          title: "Missing Information",
+          description: "Please provide a subject for your study group.",
+          variant: "destructive",
+        })
+        setIsSubmitting(false)
+        return
+      }
+
+      // Simulate API call
+      await new Promise((resolve) => setTimeout(resolve, 1000))
+
+      // Get existing groups from localStorage
+      const existingGroups = JSON.parse(localStorage.getItem("gwStudyGroups") || "[]")
+
+      // Create new group object
+      const newGroup = {
+        id: Date.now().toString(),
+        name: groupName,
+        description: groupDescription,
+        course,
+        subject,
+        visibility,
+        tags: tags
+          .split(",")
+          .map((tag) => tag.trim())
+          .filter(Boolean),
+        members: 1,
+        role: "admin",
+        creator: "Faculty Member", // In a real app, this would be the current user
+        creatorAvatar: "/placeholder.svg?height=40&width=40",
+        lastActive: "Just now",
+        created: new Date().toISOString(),
+        nextMeeting: null,
+        unreadMessages: 0,
+        upcomingEvents: 0,
+        permissions: {
+          allowStudentPosts,
+          allowStudentUploads,
+          allowStudentEvents,
+          notifyDashboard,
+        },
+      }
+
+      // Add to localStorage
+      localStorage.setItem("gwStudyGroups", JSON.stringify([...existingGroups, newGroup]))
+
+      // Add to user's groups
+      const userGroups = JSON.parse(localStorage.getItem("gwUserStudyGroups") || "[]")
+      localStorage.setItem("gwUserStudyGroups", JSON.stringify([...userGroups, newGroup.id]))
+
+      // Dispatch custom event to update UI
+      window.dispatchEvent(new Event("gwStudyGroupsUpdated"))
+
+      toast({
+        title: "Study Group Created",
+        description: "Your study group has been created successfully.",
+      })
+
+      // Redirect to the new group
+      router.push(`/faculty/study-groups/${newGroup.id}`)
+    } catch (error) {
+      console.error("Error creating group:", error)
+      toast({
+        title: "Error",
+        description: "There was a problem creating your study group. Please try again.",
+        variant: "destructive",
+      })
+    } finally {
+      setIsSubmitting(false)
+    }
   }
 
   return (
@@ -264,7 +347,9 @@ export default function CreateStudyGroupPage() {
                     <div className="space-y-4">
                       <div className="flex items-center gap-2">
                         <Input placeholder="Search by name or email..." className="flex-1" />
-                        <Button variant="outline">Add</Button>
+                        <Button variant="outline" type="button">
+                          Add
+                        </Button>
                       </div>
                       <div className="text-sm text-gray-500">
                         No co-administrators added yet. Co-administrators can help manage the group, approve members,
@@ -277,10 +362,12 @@ export default function CreateStudyGroupPage() {
 
               <div className="mt-6 flex justify-end gap-4">
                 <Link href="/faculty/study-groups">
-                  <Button variant="outline">Cancel</Button>
+                  <Button variant="outline" type="button">
+                    Cancel
+                  </Button>
                 </Link>
-                <Button type="submit" className="bg-[#0033A0] hover:bg-[#002180]">
-                  Create Study Group
+                <Button type="submit" className="bg-[#0033A0] hover:bg-[#002180]" disabled={isSubmitting}>
+                  {isSubmitting ? "Creating..." : "Create Study Group"}
                 </Button>
               </div>
             </form>
