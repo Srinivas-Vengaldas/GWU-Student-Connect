@@ -33,6 +33,10 @@
 * **Authentication:** Firebase Auth
 * **Deployment:** Vercel (Frontend)
 
+## 🖥️ Demo
+
+https://github.com/user-attachments/assets/48cc85ad-9eae-499f-97d8-21b714d7bd5b
+
 ## 🚀 Getting Started
 
 To get a local copy up and running, follow these simple steps.
