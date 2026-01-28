@@ -1,6 +1,6 @@
 # 🎓 GWU Student Connect
 
-![Project Status](https://img.shields.io/badge/Status-Active-success?style=for-the-badge)
+![Project Status](https://img.shields.io/badge/Status-Completed-success?style=for-the-badge)
 ![License](https://img.shields.io/badge/License-MIT-blue?style=for-the-badge)
 ![Built With](https://img.shields.io/badge/Built%20With-React%20%26%20Node-61DAFB?style=for-the-badge)
 
